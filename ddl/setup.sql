@@ -13,9 +13,9 @@ CREATE DATABASE baxdb
     ENCODING = 'UTF-8'
     ;
 
-\connect baxdb
+--\connect baxdb
 
-CREATE OR REPLACE FUNCTION array_multi_index( ANYARRAY, INTEGER[] )
-    RETURNS ANYARRAY
-    AS '$libdir/baxdb/array_multi_index'
-    LANGUAGE C IMMUTABLE STRICT;
+--CREATE OR REPLACE FUNCTION array_multi_index( ANYARRAY, INTEGER[] )
+--    RETURNS ANYARRAY
+--    AS '$libdir/baxdb/array_multi_index'
+--    LANGUAGE C IMMUTABLE STRICT;
