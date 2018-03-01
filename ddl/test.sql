@@ -18,13 +18,9 @@ CREATE DATABASE baxdb
   ENCODING = 'UTF-8'
   ;
 
-DROP SCHEMA IF EXISTS baxdb;
-
 \connect baxdb
 
-CREATE SCHEMA baxdb;
-
-CREATE TABLE IF NOT EXISTS baxdb.species (
+CREATE TABLE IF NOT EXISTS species (
   species_id SERIAL PRIMARY KEY,
   shortname VARCHAR(45) UNIQUE NOT NULL,
   binomial VARCHAR(45) NOT NULL,
