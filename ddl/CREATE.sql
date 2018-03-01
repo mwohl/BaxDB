@@ -14,8 +14,8 @@
 -- -----------------------------------------------------
 -- Schema baxdb
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `baxdb` DEFAULT CHARACTER SET utf8 ;
-USE `baxdb` ;
+CREATE SCHEMA IF NOT EXISTS baxdb DEFAULT CHARACTER SET utf8 ;
+\c baxdb
 
 -- -----------------------------------------------------
 -- Table `baxdb`.`species`

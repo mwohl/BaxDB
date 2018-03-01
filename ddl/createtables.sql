@@ -1,11 +1,14 @@
-/* Create the sample table */
+-- Connect to the baxdb database
+\connect baxdb
+
+-- Create the sample table
 DROP TABLE IF EXISTS sample;
 
-CREATE TABLE sample (
-    sample_id      SERIAL    PRIMARY KEY,
-    sample_name    VARCHAR,
-    sample_growout INT,
-    sample_line    INT
-);
-
-
+--CREATE TABLE IF NOT EXISTS species (
+CREATE TABLE species (
+  species_id SERIAL PRIMARY KEY,
+  shortname VARCHAR(45) UNIQUE NOT NULL,
+  binomial VARCHAR(45) NOT NULL,
+  subspecies VARCHAR(45),
+  variety VARCHAR(45))
+  ;
