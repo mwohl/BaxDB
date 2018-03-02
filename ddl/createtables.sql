@@ -185,6 +185,6 @@ CREATE TABLE gwas_result (
   logp NUMERIC,
   null_logp NUMERIC,
   cofactor NUMERIC CHECK (cofactor > 0),
-  order NUMERIC CHECK (order > 0),
+  _order NUMERIC CHECK (_order > 0),
   gwas_result_gwas_run INTEGER NOT NULL REFERENCES gwas_run (gwas_run_id)
   );
