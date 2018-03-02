@@ -20,6 +20,6 @@
 #    chmod -R 755 "$pg_installdir"
 #)
 
-#sudo -u postgres psql -q -U postgres -f ./ddl/setup.sql || { printf "Unable to perform setup for 'baxdb' database as user 'postgres'. Check UNIX account privileges and pg_hba.conf. Aborting.\n" 1>&2; exit 1; }
+sudo -u postgres psql -q -U postgres -f ./ddl/setup.sql || { printf "Unable to perform setup for 'baxdb' database as user 'postgres'. Check UNIX account privileges and pg_hba.conf. Aborting.\n" 1>&2; exit 1; }
 
-sudo -u postgres psql -q -U postgres -f ./ddl/test.sql || { printf "Unable to perform setup for 'baxdb' database as user 'postgres'. Check UNIX account privileges and pg_hba.conf. Aborting.\n" 1>&2; exit 1; }
+sudo -u postgres psql -q -U postgres -f ./ddl/createtables.sql || { printf "Unable to perform setup for 'baxdb' database as user 'postgres'. Check UNIX account privileges and pg_hba.conf. Aborting.\n" 1>&2; exit 1; }
