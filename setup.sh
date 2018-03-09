@@ -1,5 +1,7 @@
 #! /bin/sh
 
+
+
 command -v pg_config > /dev/null 2>&1 || { printf "Command 'pg_config' is required but not found in path. Make sure PostgreSQL client tools are installed. Aborting.\n" 1>&2; exit 1; }
 
 pg_libdir = "$(pg_config --pkglibdir)"
