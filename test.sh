@@ -14,3 +14,10 @@ n" 1>&2 exit 1; }
     cp array_multi_index.so imputed_genotype.so summarize_variant.so "$PG_INSTALLDIR" &&
     chmod -R 755 "$PG_INSTALLDIR" 
 )
+(
+    cd ./lib/tinyint-0.1.1 &&
+    make &&
+    sed -i -e '1i\\\connect baxdb' -e 's|$libdir\/tinyint|$libdir/baxdb/tinyint|g' tinyint.sql &&
+    cp tinyint.so "$PG_INSTALLDIR" &&
+    chmod -R 755 "$PG_INSTALLDIR"
+)
