@@ -1,11 +1,5 @@
 \connect baxdb
 \connect baxdb
-\connect baxdb
-\connect baxdb
-\connect baxdb
-\connect baxdb
-\connect baxdb
-\connect baxdb
 CREATE FUNCTION tinyint_in(cstring) RETURNS tinyint AS
 '$libdir/baxdb/tinyint'
 LANGUAGE c IMMUTABLE STRICT;
