@@ -56,4 +56,15 @@ def insert_species(conn, species):
   cur.close()
   return newID
 
+class species:
+  def __init__(self, shortname, binomial, subspecies, variety):
+    self.n = shortname
+    self.b = binomial
+    self.s = subspecies
+    self.v = variety
 
+if __name__ == '__main__':
+  conn = connect()
+  mySpecies = species('maize', 'Zea mays', None, None)
+  insertedID = insert_species(conn, mySpecies)
+  print insertedID
