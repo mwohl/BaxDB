@@ -48,10 +48,10 @@ def connect():
 def insert_species(conn, species):
   cur = conn.cursor()
   SQL = """INSERT INTO species (shortname, binomial, subspecies, variety)
-        VALUES (%s, %s, %s, %s);"""
+        VALUES (%s, %s, %s, %s) RETURNING species_id;"""
   args_tuple = (species.n, species.b, species.s, species.v)
   cur.execute(SQL, args_tuple)
-  newID = cursor.fetchone()[0]
+  newID = cur.fetchone()[0]
   conn.commit()
   cur.close()
   return newID
@@ -67,4 +67,4 @@ if __name__ == '__main__':
   conn = connect()
   mySpecies = species('maize', 'Zea mays', None, None)
   insertedID = insert_species(conn, mySpecies)
-  print insertedID
+  print(insertedID)
