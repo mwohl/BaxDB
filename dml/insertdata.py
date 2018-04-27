@@ -56,12 +56,30 @@ def insert_species(conn, species):
   cur.close()
   return newID
 
+def insert_population():
+  
+
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
     self.n = shortname
     self.b = binomial
     self.s = subspecies
     self.v = variety
+
+class population:
+  def __init__(self, population_name, population_species):
+    self.n = population_name
+    self.s = population_species
+
+class line:
+  def __init__(self, line_name, line_population):
+    self.n = line_name
+    self.p = line_population
+
+class chromosome:
+  def __init__(self, chromosome_name, chromosome_species):
+    self.n = chromosome_name
+    self.s = chromosome_species
 
 if __name__ == '__main__':
   conn = connect()
