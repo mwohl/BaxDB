@@ -56,8 +56,23 @@ def insert_species(conn, species):
   cur.close()
   return newID
 
-def insert_population():
-  
+def find_species(conn, speciesShortname):
+  cur = conn.cursor()
+  cur.execute("SELECT species_id FROM species WHERE shortname = '%s';" %  speciesShortname)
+  speciesID = cur.fetchone()[0]
+  cur.close()
+  return speciesID
+
+def insert_population(conn, population): 
+  cur = conn.cursor()
+  SQL = """INSERT INTO population (population_name, population_species)
+        VALUES (%s, %s) RETURNING population_id;"""
+  args_tuple = (population.n, population.s)
+  cur.execute(SQL, args_tuple)
+  newID = cur.fetchone()[0]
+  conn.commit()
+  cur.close()
+  return newID  
 
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
@@ -83,6 +98,13 @@ class chromosome:
 
 if __name__ == '__main__':
   conn = connect()
-  mySpecies = species('maize', 'Zea mays', None, None)
-  insertedID = insert_species(conn, mySpecies)
-  print(insertedID)
+  #mySpecies = species('maize', 'Zea mays', None, None)
+  #insertedSpeciesID = insert_species(conn, mySpecies)
+  #print(insertedSpeciesID)
+
+  maizeSpeciesID = find_species(conn, 'maize')
+  print(maizeSpeciesID)
+
+  myPopulation = population('Maize282',maizeSpeciesID)
+  insertedPopulationID = insert_population(conn, myPopulation)
+  print(insertedPopulationID)
