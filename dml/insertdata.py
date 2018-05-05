@@ -74,11 +74,29 @@ def insert_population(conn, population):
   cur.close()
   return newID  
 
+def find_population(conn, populationName):
+  cur = conn.cursor()
+  cur.execute("SELECT population_id FROM population WHERE population_name = '%s';" % populationName)
+  populationID = cur.fetchone()[0]
+  cur.close()
+  return populationID
+
 def insert_chromosome(conn, chromosome):
   cur = conn.cursor()
   SQL = """INSERT INTO chromosome (chromosome_name, chromosome_species)
         VALUES (%s, %s) RETURNING chromosome_id;"""
   args_tuple = (chromosome.n, chromosome.s)
+  cur.execute(SQL, args_tuple)
+  newID = cur.fetchone()[0]
+  conn.commit()
+  cur.close()
+  return newID
+
+def insert_line(conn, line):
+  cur = conn.cursor()
+  SQL = """INSERT INTO line (line_name, line_population)
+        VALUES (%s, %s) RETURNING line_id;"""
+  args_tuple = (line.n, line.p)
   cur.execute(SQL, args_tuple)
   newID = cur.fetchone()[0]
   conn.commit()
@@ -120,12 +138,26 @@ if __name__ == '__main__':
   #insertedPopulationID = insert_population(conn, myPopulation)
   #print(insertedPopulationID)
 
-  chrlist = []
-  for count in range(1,11):
-    chrname = 'chr'+str(count)
-    chrom = chromosome(chrname,maizeSpeciesID)
-    chrlist.append(chrom)
-  print(chrlist)
-  for item in chrlist:
-    insertedChromosomeID = insert_chromosome(conn, item)
-    print(insertedChromosomeID)
+  #chrlist = []
+  #for count in range(1,11):
+  #  chrname = 'chr'+str(count)
+  #  chrom = chromosome(chrname,maizeSpeciesID)
+  #  chrlist.append(chrom)
+  #print(chrlist)
+  #for item in chrlist:
+  #  insertedChromosomeID = insert_chromosome(conn, item)
+  #  print(insertedChromosomeID)
+
+  maize282popID = find_population(conn, 'Maize282')
+  print(maize282popID)
+
+  #linelist = []
+  with open('/home/mwohl/Downloads/chr1_282_agpv4.012.indv') as f:
+    linelist  = f.readlines()
+  print(len(linelist))
+
+  for linename in linelist:
+    linename = linename.rstrip()
+    myLine = line(linename, maize282popID)
+    insertedLineID = insert_line(conn, myLine)
+    print(insertedLineID)
