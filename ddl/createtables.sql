@@ -76,7 +76,8 @@ DROP TABLE IF EXISTS chromosome;
 CREATE TABLE chromosome (
   chromosome_id SERIAL PRIMARY KEY,
   chromosome_name VARCHAR(45) NOT NULL,
-  chromosome_species INTEGER NOT NULL REFERENCES species (species_id)
+  chromosome_species INTEGER NOT NULL REFERENCES species (species_id),
+  unique (chromosome_name, chromosome_species)
   );
 
 -- ---------------------------
