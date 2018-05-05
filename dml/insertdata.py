@@ -151,13 +151,16 @@ if __name__ == '__main__':
   maize282popID = find_population(conn, 'Maize282')
   print(maize282popID)
 
-  #linelist = []
   with open('/home/mwohl/Downloads/chr1_282_agpv4.012.indv') as f:
     linelist  = f.readlines()
-  print(len(linelist))
+  #print(len(linelist))
 
-  for linename in linelist:
-    linename = linename.rstrip()
-    myLine = line(linename, maize282popID)
-    insertedLineID = insert_line(conn, myLine)
-    print(insertedLineID)
+  #for linename in linelist:
+  #  linename = linename.rstrip()
+  #  myLine = line(linename, maize282popID)
+  #  insertedLineID = insert_line(conn, myLine)
+  #  print(insertedLineID)
+
+  with open('/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012') as f:
+    genotypes = f.readlines()
+  print(len(linelist))
