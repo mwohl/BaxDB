@@ -114,7 +114,7 @@ def find_line(conn, line_name):
 def insert_genotype(conn, genotype):
   cur = conn.cursor()
   SQL = """INSERT INTO genotype(line_ref, genotype)
-        VALUES (%s,%s) RETURNING genotype_id;"""
+        VALUES (%s,%s) RETURNING line_ref;"""
   args_tuple = (genotype.l, genotype.g)
   cur.execute(SQL, args_tuple)
   newID = cur.fetchone()[0]
@@ -163,6 +163,7 @@ if __name__ == '__main__':
   # LOOK UP ID OF A HARD-CODED SPECIES USING find_species() #
   ###########################################################
   maizeSpeciesID = find_species(conn, 'maize')
+  print("SpeciesID of maize:")
   print(maizeSpeciesID)
 
   ###############################################################
@@ -189,8 +190,8 @@ if __name__ == '__main__':
   # LOOK UP ID OF A HARD-CODED POPULATION USING find_population() #
   #################################################################
   maize282popID = find_population(conn, 'Maize282')
+  print("PopulationID of Maize282:")
   print(maize282popID)
-
 
   ############################################################################
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB USING insert_line() #
@@ -208,39 +209,37 @@ if __name__ == '__main__':
   ###########...
   # IN PROGRESS... code for preparing genotype objects for insertion into db...
   ###########...
+  rawGenos = []
   with open('/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012') as f:
     myreader = csv.reader(f, delimiter='\t')
     for item in myreader:
       item.pop(0)
-      print(len(item))
-    
-    lineIDlist = []
-    for linename in linelist:
-      linename = linename.rstrip()
-      lineID = find_line(conn, linename)
-      lineIDlist.append(lineID)
+      for i in range(len(item)):
+        item[i] = int(item[i])
+      rawGenos.append(item)
+      #print(len(item))
 
-    print("length of list of lineIDs:\n")
-    print(len(lineIDlist))
-    print(lineIDlist)
+  #print("Number of raw genotypes in list:")
+  #print(len(rawGenos))
+  #print("Length of each raw genotype in list:")
+  #for rawGeno in rawGenos:
+  #  print(len(rawGeno))     
+  #  print(type(rawGeno))
+  
+  lineIDlist = []
+  for linename in linelist:
+    linename = linename.rstrip()
+    lineID = find_line(conn, linename)
+    lineIDlist.append(lineID)
 
-    zipped = zip(lineIDlist, myreader)
-    print(len(list(zipped)))
-    
-  #OLD WAY:
-  #  genotypes = f.readlines()
-  #print("length of list of genotypes:\n")
-  #print(len(genotypes))
-  #print("length of each genotype:\n")
-  #for genotype in genotypes:
-  #  print(len(genotype))
-  ###
+  #print("length of list of lineIDs:")
+  #print(len(lineIDlist))
+  #print("list of lineIDs:")
+  #print(lineIDlist)
 
-
-  #zippedLineGenotype = zip(lineIDlist, genotypes)
-  #for zipItem in zippedLineGenotype:
-  #  myGenotype = genotype(zipItem[0], zipItem[1])
-  #  print(myGenotype.l)
-  #  print(len(myGenotype.g))
-    #insertedGenotypeID = insert_genotype(conn, myGenotype)
-    #print(insertedGenotypeID)
+  zipped = zip(lineIDlist, rawGenos)
+  ziplist = list(zipped)
+  for zippedpair in ziplist:
+    myGeno = genotype(zippedpair[0], zippedpair[1])
+    insertedGenoID = insert_genotype(conn, myGeno)
+    print(insertedGenoID)
