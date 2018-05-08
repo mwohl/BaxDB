@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 import psycopg2
 import csv
+import numpy as np
 
 def config(filename='database.ini', section='postgresql'):
   # create a parser
@@ -103,6 +104,24 @@ def insert_line(conn, line):
   cur.close()
   return newID
 
+def find_line(conn, line_name):
+  cur = conn.cursor()
+  cur.execute("SELECT line_id FROM line WHERE line_name = '%s';" % line_name)
+  lineID = cur.fetchone()[0]
+  cur.close()
+  return lineID
+
+def insert_genotype(conn, genotype):
+  cur = conn.cursor()
+  SQL = """INSERT INTO genotype(line_ref, genotype)
+        VALUES (%s,%s) RETURNING genotype_id;"""
+  args_tuple = (genotype.l, genotype.g)
+  cur.execute(SQL, args_tuple)
+  newID = cur.fetchone()[0]
+  conn.commit()
+  cur.close()
+  return newID
+
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
     self.n = shortname
@@ -125,19 +144,37 @@ class chromosome:
     self.n = chromosome_name
     self.s = chromosome_species
 
+class genotype:
+  def __init__(self, line_ref, genotype):
+    self.l = line_ref
+    self.g = genotype
+
 if __name__ == '__main__':
   conn = connect()
+  #########################################################
+  # ADD A HARD-CODED SPECIES TO DB USING insert_species() #
+  #########################################################
   #mySpecies = species('maize', 'Zea mays', None, None)
   #insertedSpeciesID = insert_species(conn, mySpecies)
   #print(insertedSpeciesID)
 
+  
+  ###########################################################
+  # LOOK UP ID OF A HARD-CODED SPECIES USING find_species() #
+  ###########################################################
   maizeSpeciesID = find_species(conn, 'maize')
   print(maizeSpeciesID)
 
+  ###############################################################
+  # ADD A HARD-CODED POPULATION TO DB USING insert_population() #
+  ###############################################################
   #myPopulation = population('Maize282',maizeSpeciesID)
   #insertedPopulationID = insert_population(conn, myPopulation)
   #print(insertedPopulationID)
 
+  ########################################################################
+  # ADD A GENERATED LIST OF CHROMOSOMES TO DB USING insert_chromosome() #
+  ########################################################################
   #chrlist = []
   #for count in range(1,11):
   #  chrname = 'chr'+str(count)
@@ -148,9 +185,16 @@ if __name__ == '__main__':
   #  insertedChromosomeID = insert_chromosome(conn, item)
   #  print(insertedChromosomeID)
 
+  #################################################################
+  # LOOK UP ID OF A HARD-CODED POPULATION USING find_population() #
+  #################################################################
   maize282popID = find_population(conn, 'Maize282')
   print(maize282popID)
 
+
+  ############################################################################
+  # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB USING insert_line() #
+  ############################################################################
   with open('/home/mwohl/Downloads/chr1_282_agpv4.012.indv') as f:
     linelist  = f.readlines()
   #print(len(linelist))
@@ -161,6 +205,42 @@ if __name__ == '__main__':
   #  insertedLineID = insert_line(conn, myLine)
   #  print(insertedLineID)
 
+  ###########...
+  # IN PROGRESS... code for preparing genotype objects for insertion into db...
+  ###########...
   with open('/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012') as f:
-    genotypes = f.readlines()
-  print(len(linelist))
+    myreader = csv.reader(f, delimiter='\t')
+    for item in myreader:
+      item.pop(0)
+      print(len(item))
+    
+    lineIDlist = []
+    for linename in linelist:
+      linename = linename.rstrip()
+      lineID = find_line(conn, linename)
+      lineIDlist.append(lineID)
+
+    print("length of list of lineIDs:\n")
+    print(len(lineIDlist))
+    print(lineIDlist)
+
+    zipped = zip(lineIDlist, myreader)
+    print(len(list(zipped)))
+    
+  #OLD WAY:
+  #  genotypes = f.readlines()
+  #print("length of list of genotypes:\n")
+  #print(len(genotypes))
+  #print("length of each genotype:\n")
+  #for genotype in genotypes:
+  #  print(len(genotype))
+  ###
+
+
+  #zippedLineGenotype = zip(lineIDlist, genotypes)
+  #for zipItem in zippedLineGenotype:
+  #  myGenotype = genotype(zipItem[0], zipItem[1])
+  #  print(myGenotype.l)
+  #  print(len(myGenotype.g))
+    #insertedGenotypeID = insert_genotype(conn, myGenotype)
+    #print(insertedGenotypeID)
