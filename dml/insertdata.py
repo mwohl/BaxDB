@@ -206,9 +206,9 @@ if __name__ == '__main__':
   #  insertedLineID = insert_line(conn, myLine)
   #  print(insertedLineID)
 
-  ###########...
-  # IN PROGRESS... code for preparing genotype objects for insertion into db...
-  ###########...
+  #################################################################################################
+  # GET GENOTYPES FROM SPECIFIED .012 FILE, CONVERT TO INT, AND ADD TO DB USING insert_genotype() #
+  #################################################################################################
   rawGenos = []
   with open('/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012') as f:
     myreader = csv.reader(f, delimiter='\t')
@@ -217,25 +217,12 @@ if __name__ == '__main__':
       for i in range(len(item)):
         item[i] = int(item[i])
       rawGenos.append(item)
-      #print(len(item))
-
-  #print("Number of raw genotypes in list:")
-  #print(len(rawGenos))
-  #print("Length of each raw genotype in list:")
-  #for rawGeno in rawGenos:
-  #  print(len(rawGeno))     
-  #  print(type(rawGeno))
   
   lineIDlist = []
   for linename in linelist:
     linename = linename.rstrip()
     lineID = find_line(conn, linename)
     lineIDlist.append(lineID)
-
-  #print("length of list of lineIDs:")
-  #print(len(lineIDlist))
-  #print("list of lineIDs:")
-  #print(lineIDlist)
 
   zipped = zip(lineIDlist, rawGenos)
   ziplist = list(zipped)
