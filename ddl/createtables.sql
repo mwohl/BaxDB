@@ -96,8 +96,10 @@ CREATE TABLE nucleotide (
 DROP TABLE IF EXISTS genotype;
 CREATE TABLE genotype (
   line_ref INTEGER PRIMARY KEY,
+  chromosome_id INTEGER NOT NULL,
   genotype tinyint[] NOT NULL,
-  FOREIGN KEY (line_ref) REFERENCES line (line_id)
+  FOREIGN KEY (line_ref) REFERENCES line (line_id),
+  FOREIGN KEY (chromosome_id) REFERENCES chromosome (chromosome_id)
   );
 
 -- ----------------------
