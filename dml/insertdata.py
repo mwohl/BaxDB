@@ -232,9 +232,9 @@ if __name__ == '__main__':
   #insertedLineIDs = insert_lines_from_file(conn, '/home/mwohl/Downloads/chr1_282_agpv4.012.indv', maize282popID)
   #print(insertedLineIDs)
 
-  #################################################
-  # ADD ALL CHROMOSOMES FOR A SPECIES TO DB USING #
-  #################################################
+  ###########################################
+  # ADD ALL CHROMOSOMES FOR A SPECIES TO DB #
+  ###########################################
   #insertedChromosomeIDs = insert_all_chromosomes_for_species(conn, 10, maizeSpeciesID)
   #print(insertedChromosomeIDs)
 
