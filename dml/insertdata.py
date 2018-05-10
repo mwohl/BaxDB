@@ -82,6 +82,13 @@ def find_population(conn, populationName):
   cur.close()
   return populationID
 
+def generate_chromosome_list(numChromosomes):
+  chrlist = []
+  for count in range(1,numChromosomes+1):
+    chrname = 'chr'+str(count)
+    chrlist.append(chrname)
+  return chrlist
+
 def insert_chromosome(conn, chromosome):
   cur = conn.cursor()
   SQL = """INSERT INTO chromosome (chromosome_name, chromosome_species)
@@ -92,6 +99,15 @@ def insert_chromosome(conn, chromosome):
   conn.commit()
   cur.close()
   return newID
+
+def insert_all_chromosomes_for_species(conn, numChromosomes, speciesID)
+  chrlist = generate_chromosome_list(numChromosomes)
+  insertedChromosomeIDs = []
+  for chrname in chrlist:
+    chrobj = chromosome(chrname, speciesID)
+    insertedChromosomeID = insert_chromosome(conn, chrobj)
+    insertedChromosomeIDs.append(insertedChromosomeID)
+  return insertedChromosomeIDs
 
 def find_chromosome(conn, chromosome_name, chromosome_species):
   cur = conn.cursor()
@@ -214,21 +230,14 @@ if __name__ == '__main__':
   ############################################################################
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB USING insert_line() #
   ############################################################################
-  insertedLineIDs = insert_lines_from_file(conn, '/home/mwohl/Downloads/chr1_282_agpv4.012.indv', maize282popID)
-  print(insertedLineIDs)
+  #insertedLineIDs = insert_lines_from_file(conn, '/home/mwohl/Downloads/chr1_282_agpv4.012.indv', maize282popID)
+  #print(insertedLineIDs)
 
   ########################################################################
   # ADD A GENERATED LIST OF CHROMOSOMES TO DB USING insert_chromosome() #
   ########################################################################
-  #chrlist = []
-  #for count in range(1,11):
-  #  chrname = 'chr'+str(count)
-  #  chrom = chromosome(chrname,maizeSpeciesID)
-  #  chrlist.append(chrom)
-  #print(chrlist)
-  #for item in chrlist:
-  #  insertedChromosomeID = insert_chromosome(conn, item)
-  #  print(insertedChromosomeID)
+  #insertedChromosomeIDs = insert_all_chromosomes_for_species(conn, 10, maizeSpeciesID)
+  #print(insertedChromosomeIDs)
 
   #################################################################################################
   # GET GENOTYPES FROM SPECIFIED .012 FILE, CONVERT TO INT, AND ADD TO DB USING insert_genotype() #
