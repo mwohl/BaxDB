@@ -101,6 +101,13 @@ def find_chromosome(conn, chromosome_name, chromosome_species):
   cur.close()
   return chromosomeID
 
+def parseLinesFromFile(lineFile):
+  with open(lineFile) as f:
+    linelist = f.readlines()
+    for linename in linelist:
+      linename = linename.rstrip()
+  return linelist
+
 def insert_line(conn, line):
   cur = conn.cursor()
   SQL = """INSERT INTO line (line_name, line_population)
@@ -111,6 +118,15 @@ def insert_line(conn, line):
   conn.commit()
   cur.close()
   return newID
+
+def insert_lines_from_file(conn, lineFile, populationID):
+  linelist = parseLinesFromFile(lineFile)
+  insertedLineIDs = []
+  for linename in linelist:
+    lineobj = line(linename, populationID)
+    insertedLineID = insert_line(conn, lineobj)
+    insertedLineIDs.append(insertedLineID)
+  return insertedLineIDs
 
 def find_line(conn, line_name):
   cur = conn.cursor()
@@ -167,7 +183,13 @@ if __name__ == '__main__':
   #insertedSpeciesID = insert_species(conn, mySpecies)
   #print(insertedSpeciesID)
 
-  
+  ###############################################################
+  # ADD A HARD-CODED POPULATION TO DB USING insert_population() #
+  ###############################################################
+  #myPopulation = population('Maize282',maizeSpeciesID)
+  #insertedPopulationID = insert_population(conn, myPopulation)
+  #print(insertedPopulationID)
+
   ###########################################################
   # LOOK UP ID OF A HARD-CODED SPECIES USING find_species() #
   ###########################################################
@@ -175,12 +197,25 @@ if __name__ == '__main__':
   print("SpeciesID of maize:")
   print(maizeSpeciesID)
 
-  ###############################################################
-  # ADD A HARD-CODED POPULATION TO DB USING insert_population() #
-  ###############################################################
-  #myPopulation = population('Maize282',maizeSpeciesID)
-  #insertedPopulationID = insert_population(conn, myPopulation)
-  #print(insertedPopulationID)
+  #################################################################
+  # LOOK UP ID OF A HARD-CODED POPULATION USING find_population() #
+  #################################################################
+  maize282popID = find_population(conn, 'Maize282')
+  print("PopulationID of Maize282:")
+  print(maize282popID)
+
+  #################################################################
+  # LOOK UP ID OF A HARD-CODED CHROMOSOME USING find_chromosome() #
+  #################################################################
+  maizeChr1ID = find_chromosome(conn, 'chr1', maizeSpeciesID)
+  print("ChromosomeID of Maize Chr1:")
+  print(MaizeChr1ID) 
+
+  ############################################################################
+  # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB USING insert_line() #
+  ############################################################################
+  insertedLineIDs = insert_lines_from_file(conn, '/home/mwohl/Downloads/chr1_282_agpv4.012.indv', maize282popID)
+  print(insertedLineIDs)
 
   ########################################################################
   # ADD A GENERATED LIST OF CHROMOSOMES TO DB USING insert_chromosome() #
@@ -194,33 +229,6 @@ if __name__ == '__main__':
   #for item in chrlist:
   #  insertedChromosomeID = insert_chromosome(conn, item)
   #  print(insertedChromosomeID)
-
-  #################################################################
-  # LOOK UP ID OF A HARD-CODED POPULATION USING find_population() #
-  #################################################################
-  maize282popID = find_population(conn, 'Maize282')
-  print("PopulationID of Maize282:")
-  print(maize282popID)
-
-  #################################################################
-  # LOOK UP ID OF A HARD-CODED POPULATION USING find_population() #
-  #################################################################
-  maizeChr1ID = find_chromosome(conn, 'chr1', maizeSpeciesID)
-  print("ChromosomeID of Maize Chr1:")
-  print(MaizeChr1ID) 
-
-  ############################################################################
-  # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB USING insert_line() #
-  ############################################################################
-  with open('/home/mwohl/Downloads/chr1_282_agpv4.012.indv') as f:
-    linelist  = f.readlines()
-  #print(len(linelist))
-
-  #for linename in linelist:
-  #  linename = linename.rstrip()
-  #  myLine = line(linename, maize282popID)
-  #  insertedLineID = insert_line(conn, myLine)
-  #  print(insertedLineID)
 
   #################################################################################################
   # GET GENOTYPES FROM SPECIFIED .012 FILE, CONVERT TO INT, AND ADD TO DB USING insert_genotype() #
