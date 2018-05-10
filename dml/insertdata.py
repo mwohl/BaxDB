@@ -1,7 +1,6 @@
 from configparser import ConfigParser
 import psycopg2
 import csv
-import numpy as np
 
 def config(filename='database.ini', section='postgresql'):
   # create a parser
@@ -227,15 +226,15 @@ if __name__ == '__main__':
   print("ChromosomeID of Maize Chr1:")
   print(MaizeChr1ID) 
 
-  ############################################################################
-  # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB USING insert_line() #
-  ############################################################################
+  ########################################################
+  # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB #
+  ########################################################
   #insertedLineIDs = insert_lines_from_file(conn, '/home/mwohl/Downloads/chr1_282_agpv4.012.indv', maize282popID)
   #print(insertedLineIDs)
 
-  ########################################################################
-  # ADD A GENERATED LIST OF CHROMOSOMES TO DB USING insert_chromosome() #
-  ########################################################################
+  #################################################
+  # ADD ALL CHROMOSOMES FOR A SPECIES TO DB USING #
+  #################################################
   #insertedChromosomeIDs = insert_all_chromosomes_for_species(conn, 10, maizeSpeciesID)
   #print(insertedChromosomeIDs)
 
