@@ -93,6 +93,14 @@ def insert_chromosome(conn, chromosome):
   cur.close()
   return newID
 
+def find_chromosome(conn, chromosome_name, chromosome_species):
+  cur = conn.cursor()
+  # not sure if next line is correct...
+  cur.execute("SELECT chromosome_id FROM chromosome WHERE chromosome_name = '%s' AND chromosome_species = '%s';" % chromosome_name, chromosome_species)
+  chromosomeID = cur.fetchone()[0]
+  cur.close()
+  return chromosomeID
+
 def insert_line(conn, line):
   cur = conn.cursor()
   SQL = """INSERT INTO line (line_name, line_population)
@@ -113,9 +121,9 @@ def find_line(conn, line_name):
 
 def insert_genotype(conn, genotype):
   cur = conn.cursor()
-  SQL = """INSERT INTO genotype(line_ref, genotype)
-        VALUES (%s,%s) RETURNING line_ref;"""
-  args_tuple = (genotype.l, genotype.g)
+  SQL = """INSERT INTO genotype(line_ref, chromosome_id, genotype)
+        VALUES (%s,%s,%s) RETURNING line_ref;"""
+  args_tuple = (genotype.l, genotype.c, genotype.g)
   cur.execute(SQL, args_tuple)
   newID = cur.fetchone()[0]
   conn.commit()
@@ -147,6 +155,7 @@ class chromosome:
 class genotype:
   def __init__(self, line_ref, genotype):
     self.l = line_ref
+    self.c = chromosome_id
     self.g = genotype
 
 if __name__ == '__main__':
@@ -193,6 +202,13 @@ if __name__ == '__main__':
   print("PopulationID of Maize282:")
   print(maize282popID)
 
+  #################################################################
+  # LOOK UP ID OF A HARD-CODED POPULATION USING find_population() #
+  #################################################################
+  maizeChr1ID = find_chromosome(conn, 'chr1', maizeSpeciesID)
+  print("ChromosomeID of Maize Chr1:")
+  print(MaizeChr1ID) 
+
   ############################################################################
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB USING insert_line() #
   ############################################################################
@@ -227,6 +243,6 @@ if __name__ == '__main__':
   zipped = zip(lineIDlist, rawGenos)
   ziplist = list(zipped)
   for zippedpair in ziplist:
-    myGeno = genotype(zippedpair[0], zippedpair[1])
+    myGeno = genotype(zippedpair[0], maizeChr1ID, zippedpair[1])
     insertedGenoID = insert_genotype(conn, myGeno)
     print(insertedGenoID)
