@@ -116,7 +116,7 @@ def find_chromosome(conn, chromosome_name, chromosome_species):
   cur.close()
   return chromosomeID
 
-def parseLinesFromFile(lineFile):
+def parse_lines_from_file(lineFile):
   with open(lineFile) as f:
     linelist = f.readlines()
     for linename in linelist:
@@ -135,7 +135,7 @@ def insert_line(conn, line):
   return newID
 
 def insert_lines_from_file(conn, lineFile, populationID):
-  linelist = parseLinesFromFile(lineFile)
+  linelist = parse_lines_from_file(lineFile)
   insertedLineIDs = []
   for linename in linelist:
     lineobj = line(linename, populationID)
@@ -149,6 +149,39 @@ def find_line(conn, line_name):
   lineID = cur.fetchone()[0]
   cur.close()
   return lineID
+
+def convert_linelist_to_lineIDlist(conn, linelist):
+  lineIDlist = []
+  for linename in linelist:
+    lineID = find_line(conn, linename)
+    lineIDlist.append(lineID)
+  return lineIDlist
+
+def parse_genotypes_from_file(genotypeFile):
+  rawGenos = []
+  with open(genotypeFile) as f:
+    genoReader = csv.reader(f, delimiter='\t')
+    for item in genoReader:
+      # Remove first item, which is an index term
+      item.pop(0)
+      # Convert all genotype values to integers
+      for i in range(len(item)):
+        item[i] = int(item[i])
+      rawGenos.append(item)
+  return rawGenos
+
+def insert_genotypes_from_file(conn, genotypeFile, lineFile, chromosomeID):
+  genotypes = parse_genotypes_from_file(genotypeFile)
+  linelist = parse_lines_from_file(lineFile)
+  lineIDlist = convert_linelist_to_lineIDlist(conn, linelist)
+  zipped = zip(lineIDlist, genotypes)
+  ziplist = list(zipped)
+  insertedGenotypeIDs = []
+  for zippedpair in ziplist:
+    genotypeObj = genotype(zippedpair[0], chromosomeID, zippedpair[2])
+    insertedGenotypeID = insert_genotype(conn, genotypeObj)
+    insertedGenotypeIDs.append(insertedGenotypeID)
+  return insertedGenotypeIDs
 
 def insert_genotype(conn, genotype):
   cur = conn.cursor()
@@ -230,35 +263,19 @@ if __name__ == '__main__':
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB #
   ########################################################
   #insertedLineIDs = insert_lines_from_file(conn, '/home/mwohl/Downloads/chr1_282_agpv4.012.indv', maize282popID)
+  #print("Inserted line IDs:")
   #print(insertedLineIDs)
 
   ###########################################
   # ADD ALL CHROMOSOMES FOR A SPECIES TO DB #
   ###########################################
   #insertedChromosomeIDs = insert_all_chromosomes_for_species(conn, 10, maizeSpeciesID)
+  #print("Inserted chromosome IDs:")
   #print(insertedChromosomeIDs)
 
-  #################################################################################################
-  # GET GENOTYPES FROM SPECIFIED .012 FILE, CONVERT TO INT, AND ADD TO DB USING insert_genotype() #
-  #################################################################################################
-  rawGenos = []
-  with open('/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012') as f:
-    myreader = csv.reader(f, delimiter='\t')
-    for item in myreader:
-      item.pop(0)
-      for i in range(len(item)):
-        item[i] = int(item[i])
-      rawGenos.append(item)
-  
-  lineIDlist = []
-  for linename in linelist:
-    linename = linename.rstrip()
-    lineID = find_line(conn, linename)
-    lineIDlist.append(lineID)
-
-  zipped = zip(lineIDlist, rawGenos)
-  ziplist = list(zipped)
-  for zippedpair in ziplist:
-    myGeno = genotype(zippedpair[0], maizeChr1ID, zippedpair[1])
-    insertedGenoID = insert_genotype(conn, myGeno)
-    print(insertedGenoID)
+  ###########################################################
+  # ADD ALL GENOTYPES FROM A ONE-CHROMOSOME .012 FILE TO DB #
+  ###########################################################
+  insertedGenotypeIDs = insert_genotypes_from_file(conn,'/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012' , '/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012.indv', maizeChr1ID)
+  print("Inserted genotype IDs:")
+  print(insertedGenotypeIDs)
