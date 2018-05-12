@@ -99,7 +99,7 @@ def insert_chromosome(conn, chromosome):
   cur.close()
   return newID
 
-def insert_all_chromosomes_for_species(conn, numChromosomes, speciesID)
+def insert_all_chromosomes_for_species(conn, numChromosomes, speciesID):
   chrlist = generate_chromosome_list(numChromosomes)
   insertedChromosomeIDs = []
   for chrname in chrlist:
@@ -111,7 +111,7 @@ def insert_all_chromosomes_for_species(conn, numChromosomes, speciesID)
 def find_chromosome(conn, chromosome_name, chromosome_species):
   cur = conn.cursor()
   # not sure if next line is correct...
-  cur.execute("SELECT chromosome_id FROM chromosome WHERE chromosome_name = '%s' AND chromosome_species = '%s';" % chromosome_name, chromosome_species)
+  cur.execute("SELECT chromosome_id FROM chromosome WHERE chromosome_name = '%s' AND chromosome_species = '%s';" % (chromosome_name, chromosome_species))
   chromosomeID = cur.fetchone()[0]
   cur.close()
   return chromosomeID
@@ -255,9 +255,9 @@ if __name__ == '__main__':
   #################################################################
   # LOOK UP ID OF A HARD-CODED CHROMOSOME USING find_chromosome() #
   #################################################################
-  maizeChr1ID = find_chromosome(conn, 'chr1', maizeSpeciesID)
-  print("ChromosomeID of Maize Chr1:")
-  print(MaizeChr1ID) 
+  maizeChr2ID = find_chromosome(conn, 'chr2', maizeSpeciesID)
+  print("ChromosomeID of Maize Chr2:")
+  print(maizeChr2ID) 
 
   ########################################################
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB #
@@ -276,6 +276,57 @@ if __name__ == '__main__':
   ###########################################################
   # ADD ALL GENOTYPES FROM A ONE-CHROMOSOME .012 FILE TO DB #
   ###########################################################
-  insertedGenotypeIDs = insert_genotypes_from_file(conn,'/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012' , '/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012.indv', maizeChr1ID)
-  print("Inserted genotype IDs:")
-  print(insertedGenotypeIDs)
+  #insertedGenotypeIDs = insert_genotypes_from_file(conn,'/home/mwohl/Downloads/GWASdata/chr2_282_agpv4.012' , '/home/mwohl/Downloads/GWASdata/chr2_282_agpv4.012.indv', maizeChr2ID)
+  #print("Inserted genotype IDs:")
+  #print(insertedGenotypeIDs)
+
+
+  ######################################################################################
+  # IN PROGRESS... code for getting variants from .012.pos files and inserting into DB #
+  ######################################################################################
+  with open('/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012.pos') as f:
+    variantReader = csv.reader(f, delimiter='\t')
+    variants = []
+    for variant in variantReader:
+      variants.append(variant[1])
+    print(len(variants))
+    print(variants) 
+
+#  rawGenos = []
+#  with open(genotypeFile) as f:
+#    genoReader = csv.reader(f, delimiter='\t')
+#    for item in genoReader:
+#      # Remove first item, which is an index term
+#      item.pop(0)
+#      # Convert all genotype values to integers
+#      for i in range(len(item)):
+#        item[i] = int(item[i])
+#      rawGenos.append(item)
+#  return rawGenos
+
+#  with open(lineFile) as f:
+#    linelist = f.readlines()
+#    for linename in linelist:
+#      linename = linename.rstrip()
+#  return linelist
+
+#def insert_line(conn, line):
+#  cur = conn.cursor()
+#  SQL = """INSERT INTO line (line_name, line_population)
+#        VALUES (%s, %s) RETURNING line_id;"""
+#  args_tuple = (line.n, line.p)
+#  cur.execute(SQL, args_tuple)
+#  newID = cur.fetchone()[0]
+#  conn.commit()
+#  cur.close()
+#  return newID
+
+#def insert_lines_from_file(conn, lineFile, populationID):
+#  linelist = parse_lines_from_file(lineFile)
+#  insertedLineIDs = []
+#  for linename in linelist:
+#    lineobj = line(linename, populationID)
+#    insertedLineID = insert_line(conn, lineobj)
+#    insertedLineIDs.append(insertedLineID)
+#  return insertedLineIDs
+

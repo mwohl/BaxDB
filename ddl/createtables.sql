@@ -93,6 +93,18 @@ CREATE TABLE nucleotide (
 -- -------------------------
 -- Create the genotype table
 -- -------------------------
+-- untested!
+DROP TABLE IF EXISTS variant;
+CREATE TABLE variant (
+  variant_id SERIAL PRIMARY KEY,
+  variant_species INTEGER NOT NULL REFERENCES species (species_id),
+  variant_chromosome INTEGER NOT NULL REFERENCES chromosome (chromosome_id),
+  variant_pos INTEGER NOT NULL
+  );
+
+-- -------------------------
+-- Create the genotype table
+-- -------------------------
 DROP TABLE IF EXISTS genotype;
 CREATE TABLE genotype (
   line_ref INTEGER PRIMARY KEY,
