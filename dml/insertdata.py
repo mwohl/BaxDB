@@ -157,6 +157,37 @@ def convert_linelist_to_lineIDlist(conn, linelist):
     lineIDlist.append(lineID)
   return lineIDlist
 
+#NEEDS TESTING
+def parse_variants_from_file(variantPosFile):
+  with open(variantPosFile) as f:
+    variantReader = csv.reader(f, delimiter='\t')
+    variantlist = []
+    for variant in variantReader:
+      variantlist.append(variant[1])
+  return variantlist
+
+#NEEDS TESTING
+def insert_variant(conn, variant):
+  cur = conn.cursor()
+  SQL = """INSERT INTO variant(variant_species, variant_chromosome, variant_pos)
+        VALUES (%s,%s,%s) RETURNING variant_id;"""
+  args_tuple = (variant.s, variant.c, variant.p)
+  cur.execute(SQL, args_tuple)
+  newID = cur.fetchone()[0]
+  conn.commit()
+  cur.close()
+  return newID
+
+#NEEDS TESTING
+def insert_variants_from_file(conn, variantPosFile, speciesID, chromosomeID):
+  variantlist = parse_variants_from_file(variantPosFile)
+  insertedVariantIDs = []
+  for variantpos in variantlist:
+    variantobj = variant(speciesID, chromosomeID, variantpos)
+    insertedVariantID = insert_variant(conn, variantobj)
+    insertedVariantIDs.append(insertedVariantID)
+  return insertedVariantIDs
+
 def parse_genotypes_from_file(genotypeFile):
   rawGenos = []
   with open(genotypeFile) as f:
@@ -215,6 +246,12 @@ class chromosome:
   def __init__(self, chromosome_name, chromosome_species):
     self.n = chromosome_name
     self.s = chromosome_species
+
+class variant:
+  def __init__(self, variant_species, variant_chromosome, variant_pos):
+    self.s = variant_species
+    self.c = variant_chromosome
+    self.p = variant_pos
 
 class genotype:
   def __init__(self, line_ref, genotype):
@@ -284,49 +321,6 @@ if __name__ == '__main__':
   ######################################################################################
   # IN PROGRESS... code for getting variants from .012.pos files and inserting into DB #
   ######################################################################################
-  with open('/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012.pos') as f:
-    variantReader = csv.reader(f, delimiter='\t')
-    variants = []
-    for variant in variantReader:
-      variants.append(variant[1])
-    print(len(variants))
-    print(variants) 
 
-#  rawGenos = []
-#  with open(genotypeFile) as f:
-#    genoReader = csv.reader(f, delimiter='\t')
-#    for item in genoReader:
-#      # Remove first item, which is an index term
-#      item.pop(0)
-#      # Convert all genotype values to integers
-#      for i in range(len(item)):
-#        item[i] = int(item[i])
-#      rawGenos.append(item)
-#  return rawGenos
-
-#  with open(lineFile) as f:
-#    linelist = f.readlines()
-#    for linename in linelist:
-#      linename = linename.rstrip()
-#  return linelist
-
-#def insert_line(conn, line):
-#  cur = conn.cursor()
-#  SQL = """INSERT INTO line (line_name, line_population)
-#        VALUES (%s, %s) RETURNING line_id;"""
-#  args_tuple = (line.n, line.p)
-#  cur.execute(SQL, args_tuple)
-#  newID = cur.fetchone()[0]
-#  conn.commit()
-#  cur.close()
-#  return newID
-
-#def insert_lines_from_file(conn, lineFile, populationID):
-#  linelist = parse_lines_from_file(lineFile)
-#  insertedLineIDs = []
-#  for linename in linelist:
-#    lineobj = line(linename, populationID)
-#    insertedLineID = insert_line(conn, lineobj)
-#    insertedLineIDs.append(insertedLineID)
-#  return insertedLineIDs
-
+  # NEEDS TESTING (make sure to change above chromosome calling to chr1)
+  insertedVariantIDs = insert_variants_from_file(conn, '/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012.pos', maizeSpeciesID, maizeChr1ID))
