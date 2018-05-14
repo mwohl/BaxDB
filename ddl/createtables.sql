@@ -54,8 +54,9 @@ CREATE TABLE growout (
 DROP TABLE IF EXISTS line;
 CREATE TABLE line (
   line_id SERIAL PRIMARY KEY,
-  line_name VARCHAR(45) UNIQUE NOT NULL,
-  line_population INTEGER NOT NULL REFERENCES population (population_id)
+  line_name VARCHAR(45) NOT NULL,
+  line_population INTEGER NOT NULL REFERENCES population (population_id),
+  unique (line_name, line_population)
   );
 
 -- -----------------------
@@ -91,7 +92,7 @@ CREATE TABLE nucleotide (
   );
 
 -- -------------------------
--- Create the genotype table
+-- Create the variant table
 -- -------------------------
 -- untested!
 DROP TABLE IF EXISTS variant;

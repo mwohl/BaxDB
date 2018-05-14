@@ -157,7 +157,6 @@ def convert_linelist_to_lineIDlist(conn, linelist):
     lineIDlist.append(lineID)
   return lineIDlist
 
-#NEEDS TESTING
 def parse_variants_from_file(variantPosFile):
   with open(variantPosFile) as f:
     variantReader = csv.reader(f, delimiter='\t')
@@ -181,6 +180,8 @@ def insert_variant(conn, variant):
 #NEEDS TESTING
 def insert_variants_from_file(conn, variantPosFile, speciesID, chromosomeID):
   variantlist = parse_variants_from_file(variantPosFile)
+  print('num variants:')
+  print(len(variantlist))
   insertedVariantIDs = []
   for variantpos in variantlist:
     variantobj = variant(speciesID, chromosomeID, variantpos)
@@ -292,9 +293,9 @@ if __name__ == '__main__':
   #################################################################
   # LOOK UP ID OF A HARD-CODED CHROMOSOME USING find_chromosome() #
   #################################################################
-  maizeChr2ID = find_chromosome(conn, 'chr2', maizeSpeciesID)
-  print("ChromosomeID of Maize Chr2:")
-  print(maizeChr2ID) 
+  maizeChr1ID = find_chromosome(conn, 'chr1', maizeSpeciesID)
+  print("ChromosomeID of Maize Chr1:")
+  print(maizeChr1ID) 
 
   ########################################################
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB #
@@ -323,4 +324,6 @@ if __name__ == '__main__':
   ######################################################################################
 
   # NEEDS TESTING (make sure to change above chromosome calling to chr1)
-  insertedVariantIDs = insert_variants_from_file(conn, '/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012.pos', maizeSpeciesID, maizeChr1ID))
+  insertedVariantIDs = insert_variants_from_file(conn, '/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012.pos', maizeSpeciesID, maizeChr1ID)
+  print("num inserted variants:")
+  print(len(insertedVariantIDs))
