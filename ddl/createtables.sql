@@ -108,11 +108,13 @@ CREATE TABLE variant (
 -- -------------------------
 DROP TABLE IF EXISTS genotype;
 CREATE TABLE genotype (
-  line_ref INTEGER PRIMARY KEY,
-  chromosome_id INTEGER NOT NULL,
+  genotype_id SERIAL PRIMARY KEY,
+  genotype_line INTEGER NOT NULL,
+  genotype_chromosome INTEGER NOT NULL,
   genotype tinyint[] NOT NULL,
-  FOREIGN KEY (line_ref) REFERENCES line (line_id),
-  FOREIGN KEY (chromosome_id) REFERENCES chromosome (chromosome_id)
+  FOREIGN KEY (genotype_line) REFERENCES line (line_id),
+  FOREIGN KEY (genotype_chromosome) REFERENCES chromosome (chromosome_id),
+  unique (genotype_line, genotype_chromosome)
   );
 
 -- ----------------------
