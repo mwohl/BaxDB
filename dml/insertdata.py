@@ -186,10 +186,15 @@ def insert_variant(conn, variant):
         RETURNING variant_id;"""
   args_tuple = (variant.s, variant.c, variant.p)
   cur.execute(SQL, args_tuple)
-  newID = cur.fetchone()[0]
-  conn.commit()
-  cur.close()
-  return newID
+  #newID = cur.fetchone()[0]
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
 
 #NEEDS TESTING
 def insert_variants_from_file(conn, variantPosFile, speciesID, chromosomeID):
@@ -310,16 +315,16 @@ if __name__ == '__main__':
   # LOOK UP ID OF A HARD-CODED CHROMOSOME USING find_chromosome() #
   #################################################################
 
-  maizeChr6ID = find_chromosome(conn, 'chr6', maizeSpeciesID)
-  print("ChromosomeID of Maize Chr6:")
-  print(maizeChr6ID) 
+  maizeChr1ID = find_chromosome(conn, 'chr1', maizeSpeciesID)
+  print("ChromosomeID of Maize Chr1:")
+  print(maizeChr1ID) 
 
   ########################################################
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB #
   ########################################################
-  insertedLineIDs = insert_lines_from_file(conn, '/home/mwohl/Downloads/GWASdata/chr6_282_agpv4.012.indv', maize282popID)
-  print("Inserted line IDs:")
-  print(insertedLineIDs)
+  #insertedLineIDs = insert_lines_from_file(conn, '/home/mwohl/Downloads/GWASdata/chr10_282_agpv4.012.indv', maize282popID)
+  #print("Inserted line IDs:")
+  #print(insertedLineIDs)
 
   ###########################################
   # ADD ALL CHROMOSOMES FOR A SPECIES TO DB #
@@ -331,9 +336,9 @@ if __name__ == '__main__':
   ###########################################################
   # ADD ALL GENOTYPES FROM A ONE-CHROMOSOME .012 FILE TO DB #
   ###########################################################
-  insertedGenotypeIDs = insert_genotypes_from_file(conn,'/home/mwohl/Downloads/GWASdata/chr6_282_agpv4.012' , '/home/mwohl/Downloads/GWASdata/chr6_282_agpv4.012.indv', maizeChr6ID)
-  print("Inserted genotype IDs:")
-  print(insertedGenotypeIDs)
+  #insertedGenotypeIDs = insert_genotypes_from_file(conn,'/home/mwohl/Downloads/GWASdata/chr10_282_agpv4.012' , '/home/mwohl/Downloads/GWASdata/chr10_282_agpv4.012.indv', maizeChr10ID)
+  #print("Inserted genotype IDs:")
+  #print(insertedGenotypeIDs)
 
 
   ######################################################################################
@@ -341,6 +346,6 @@ if __name__ == '__main__':
   ######################################################################################
 
   # NEEDS TESTING (make sure to change above chromosome calling to chr1)
-  #insertedVariantIDs = insert_variants_from_file(conn, '/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012.pos', maizeSpeciesID, maizeChr1ID)
-  #print("num inserted variants:")
-  #print(len(insertedVariantIDs))
+  insertedVariantIDs = insert_variants_from_file(conn, '/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012.pos', maizeSpeciesID, maizeChr1ID)
+  print("num inserted variants:")
+  print(len(insertedVariantIDs))

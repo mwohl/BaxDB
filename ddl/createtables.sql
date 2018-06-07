@@ -100,7 +100,8 @@ CREATE TABLE variant (
   variant_id SERIAL PRIMARY KEY,
   variant_species INTEGER NOT NULL REFERENCES species (species_id),
   variant_chromosome INTEGER NOT NULL REFERENCES chromosome (chromosome_id),
-  variant_pos INTEGER NOT NULL
+  variant_pos INTEGER NOT NULL,
+  unique (variant_species,variant_chromosome, variant_pos)
   );
 
 -- -------------------------
