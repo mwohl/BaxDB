@@ -48,38 +48,58 @@ def connect():
 def insert_species(conn, species):
   cur = conn.cursor()
   SQL = """INSERT INTO species (shortname, binomial, subspecies, variety)
-        VALUES (%s, %s, %s, %s) RETURNING species_id;"""
+        VALUES (%s, %s, %s, %s)
+        ON CONFLICT DO NOTHING
+        RETURNING species_id;"""
   args_tuple = (species.n, species.b, species.s, species.v)
   cur.execute(SQL, args_tuple)
-  newID = cur.fetchone()[0]
-  conn.commit()
-  cur.close()
-  return newID
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
 
 def find_species(conn, speciesShortname):
   cur = conn.cursor()
   cur.execute("SELECT species_id FROM species WHERE shortname = '%s';" %  speciesShortname)
-  speciesID = cur.fetchone()[0]
-  cur.close()
-  return speciesID
+  row = cur.fetchone()
+  if row is not None:
+    speciesID = row[0]  
+    cur.close()
+    return speciesID
+  else:
+    return None
 
 def insert_population(conn, population): 
   cur = conn.cursor()
   SQL = """INSERT INTO population (population_name, population_species)
-        VALUES (%s, %s) RETURNING population_id;"""
+        VALUES (%s, %s)
+        ON CONFLICT DO NOTHING
+        RETURNING population_id;"""
   args_tuple = (population.n, population.s)
   cur.execute(SQL, args_tuple)
-  newID = cur.fetchone()[0]
-  conn.commit()
-  cur.close()
-  return newID  
+  row = cur.fetchone()
+  if row is not None:
+     newID = row[0]
+     conn.commit()
+     cur.close()
+     return newID
+  else:
+    return None  
 
 def find_population(conn, populationName):
   cur = conn.cursor()
   cur.execute("SELECT population_id FROM population WHERE population_name = '%s';" % populationName)
-  populationID = cur.fetchone()[0]
-  cur.close()
-  return populationID
+  row = cur.fetchone()
+  if row is not None:
+    populationID = row[0]
+    cur.close()
+    return populationID
+  else:
+    return None
 
 def generate_chromosome_list(numChromosomes):
   chrlist = []
@@ -91,13 +111,19 @@ def generate_chromosome_list(numChromosomes):
 def insert_chromosome(conn, chromosome):
   cur = conn.cursor()
   SQL = """INSERT INTO chromosome (chromosome_name, chromosome_species)
-        VALUES (%s, %s) RETURNING chromosome_id;"""
+        VALUES (%s, %s)
+        ON CONFLICT DO NOTHING
+        RETURNING chromosome_id;"""
   args_tuple = (chromosome.n, chromosome.s)
   cur.execute(SQL, args_tuple)
-  newID = cur.fetchone()[0]
-  conn.commit()
-  cur.close()
-  return newID
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
 
 def insert_all_chromosomes_for_species(conn, numChromosomes, speciesID):
   chrlist = generate_chromosome_list(numChromosomes)
@@ -112,9 +138,13 @@ def find_chromosome(conn, chromosome_name, chromosome_species):
   cur = conn.cursor()
   # not sure if next line is correct...
   cur.execute("SELECT chromosome_id FROM chromosome WHERE chromosome_name = '%s' AND chromosome_species = '%s';" % (chromosome_name, chromosome_species))
-  chromosomeID = cur.fetchone()[0]
-  cur.close()
-  return chromosomeID
+  row = cur.fetchone()
+  if row is not None:
+    chromosomeID = row[0]
+    cur.close()
+    return chromosomeID
+  else:
+    return None
 
 def parse_lines_from_file(lineFile):
   linelist = []
@@ -133,7 +163,6 @@ def insert_line(conn, line):
         RETURNING line_id;"""
   args_tuple = (line.n, line.p)
   cur.execute(SQL, args_tuple)
-  #newID = cur.fetchone()[0]
   row = cur.fetchone()
   if row is not None:
     newID = row[0]
@@ -142,9 +171,6 @@ def insert_line(conn, line):
     return newID
   else:
     return None
-  #conn.commit()
-  #cur.close()
-  #return newID
 
 def insert_lines_from_file(conn, lineFile, populationID):
   linelist = parse_lines_from_file(lineFile)
@@ -158,9 +184,13 @@ def insert_lines_from_file(conn, lineFile, populationID):
 def find_line(conn, line_name):
   cur = conn.cursor()
   cur.execute("SELECT line_id FROM line WHERE line_name = '%s';" % line_name)
-  lineID = cur.fetchone()[0]
-  cur.close()
-  return lineID
+  row = cur.fetchone()
+  if row is not None:
+    lineID = row[0]
+    cur.close()
+    return lineID
+  else:
+    return None
 
 def convert_linelist_to_lineIDlist(conn, linelist):
   lineIDlist = []
@@ -300,24 +330,24 @@ if __name__ == '__main__':
   ###########################################################
   # LOOK UP ID OF A HARD-CODED SPECIES USING find_species() #
   ###########################################################
-  maizeSpeciesID = find_species(conn, 'maize')
-  print("SpeciesID of maize:")
-  print(maizeSpeciesID)
+  #maizeSpeciesID = find_species(conn, 'maize')
+  #print("SpeciesID of maize:")
+  #print(maizeSpeciesID)
 
   #################################################################
   # LOOK UP ID OF A HARD-CODED POPULATION USING find_population() #
   #################################################################
-  maize282popID = find_population(conn, 'Maize282')
-  print("PopulationID of Maize282:")
-  print(maize282popID)
+  #maize282popID = find_population(conn, 'Maize282')
+  #print("PopulationID of Maize282:")
+  #print(maize282popID)
 
   #################################################################
   # LOOK UP ID OF A HARD-CODED CHROMOSOME USING find_chromosome() #
   #################################################################
 
-  maizeChr1ID = find_chromosome(conn, 'chr1', maizeSpeciesID)
-  print("ChromosomeID of Maize Chr1:")
-  print(maizeChr1ID) 
+  #maizeChr10ID = find_chromosome(conn, 'chr10', maizeSpeciesID)
+  #print("ChromosomeID of Maize Chr10:")
+  #print(maizeChr10ID) 
 
   ########################################################
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB #
@@ -346,6 +376,6 @@ if __name__ == '__main__':
   ######################################################################################
 
   # NEEDS TESTING (make sure to change above chromosome calling to chr1)
-  insertedVariantIDs = insert_variants_from_file(conn, '/home/mwohl/Downloads/GWASdata/chr1_282_agpv4.012.pos', maizeSpeciesID, maizeChr1ID)
-  print("num inserted variants:")
-  print(len(insertedVariantIDs))
+  #insertedVariantIDs = insert_variants_from_file(conn, '/home/mwohl/Downloads/GWASdata/chr10_282_agpv4.012.pos', maizeSpeciesID, maizeChr10ID)
+  #print("num inserted variants:")
+  #print(len(insertedVariantIDs))
