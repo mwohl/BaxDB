@@ -181,9 +181,9 @@ def insert_lines_from_file(conn, lineFile, populationID):
     insertedLineIDs.append(insertedLineID)
   return insertedLineIDs
 
-def find_line(conn, line_name):
+def find_line(conn, line_name, line_population):
   cur = conn.cursor()
-  cur.execute("SELECT line_id FROM line WHERE line_name = '%s';" % line_name)
+  cur.execute("SELECT line_id FROM line WHERE line_name = '%s' AND line_population = '%s';" % (line_name, line_population))
   row = cur.fetchone()
   if row is not None:
     lineID = row[0]
@@ -192,10 +192,10 @@ def find_line(conn, line_name):
   else:
     return None
 
-def convert_linelist_to_lineIDlist(conn, linelist):
+def convert_linelist_to_lineIDlist(conn, linelist, populationID):
   lineIDlist = []
   for linename in linelist:
-    lineID = find_line(conn, linename)
+    lineID = find_line(conn, linename, populationID)
     lineIDlist.append(lineID)
   return lineIDlist
 
@@ -251,10 +251,10 @@ def parse_genotypes_from_file(genotypeFile):
       rawGenos.append(item)
   return rawGenos
 
-def insert_genotypes_from_file(conn, genotypeFile, lineFile, chromosomeID):
+def insert_genotypes_from_file(conn, genotypeFile, lineFile, chromosomeID, populationID):
   genotypes = parse_genotypes_from_file(genotypeFile)
   linelist = parse_lines_from_file(lineFile)
-  lineIDlist = convert_linelist_to_lineIDlist(conn, linelist)
+  lineIDlist = convert_linelist_to_lineIDlist(conn, linelist, populationID)
   zipped = zip(lineIDlist, genotypes)
   ziplist = list(zipped)
   insertedGenotypeIDs = []
@@ -344,10 +344,16 @@ if __name__ == '__main__':
   #################################################################
   # LOOK UP ID OF A HARD-CODED CHROMOSOME USING find_chromosome() #
   #################################################################
-
   #maizeChr10ID = find_chromosome(conn, 'chr10', maizeSpeciesID)
   #print("ChromosomeID of Maize Chr10:")
   #print(maizeChr10ID) 
+
+  #####################################################
+  # LOOK UP ID OF A HARD-CODED LINE USING find_line() #
+  #####################################################
+  #Mo17_lineID = find_line(conn, '282set_Mo17', maize282popID)
+  #print("LineID of Mo17:")
+  #print(Mo17_lineID)
 
   ########################################################
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB #
@@ -366,7 +372,7 @@ if __name__ == '__main__':
   ###########################################################
   # ADD ALL GENOTYPES FROM A ONE-CHROMOSOME .012 FILE TO DB #
   ###########################################################
-  #insertedGenotypeIDs = insert_genotypes_from_file(conn,'/home/mwohl/Downloads/GWASdata/chr10_282_agpv4.012' , '/home/mwohl/Downloads/GWASdata/chr10_282_agpv4.012.indv', maizeChr10ID)
+  #insertedGenotypeIDs = insert_genotypes_from_file(conn,'/home/mwohl/Downloads/GWASdata/chr10_282_agpv4.012' , '/home/mwohl/Downloads/GWASdata/chr10_282_agpv4.012.indv', maizeChr10ID, maize282popID)
   #print("Inserted genotype IDs:")
   #print(insertedGenotypeIDs)
 
