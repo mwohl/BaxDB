@@ -311,6 +311,19 @@ class genotype:
     self.c = genotype_chromosome
     self.g = genotype
 
+class trait:
+  def __init__(self, trait_name, measurement_unit, measurement_device, description):
+    self.n = trait_name
+    self.u = measurement_unit
+    self.m = measurement_device
+    self.d = description
+
+class phenotype:
+  def __init__(self, phenotype_line, phenotype_trait, phenotype_value):
+    self.l = phenotype_line
+    self.t = phenotype_trait
+    self.v = phenotype_value
+
 if __name__ == '__main__':
   conn = connect()
   #########################################################
