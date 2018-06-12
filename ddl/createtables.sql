@@ -136,9 +136,9 @@ CREATE TABLE trait (
 DROP TABLE IF EXISTS phenotype;
 CREATE TABLE phenotype (
   phenotype_id SERIAL PRIMARY KEY,
-  phenotype_sample INTEGER NOT NULL REFERENCES sample (sample_id),
+  phenotype_line INTEGER NOT NULL REFERENCES line (line_id),
   phenotype_trait INTEGER NOT NULL REFERENCES trait (trait_id),
-  value VARCHAR(45) NOT NULL
+  phenotype_value VARCHAR(45) NOT NULL
   );
 
 -- -----------------------------------

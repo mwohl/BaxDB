@@ -1,4 +1,5 @@
 from configparser import ConfigParser
+import pandas as pd
 import psycopg2
 import csv
 
@@ -207,7 +208,6 @@ def parse_variants_from_file(variantPosFile):
       variantlist.append(variant[1])
   return variantlist
 
-#NEEDS TESTING
 def insert_variant(conn, variant):
   cur = conn.cursor()
   SQL = """INSERT INTO variant(variant_species, variant_chromosome, variant_pos)
@@ -226,7 +226,6 @@ def insert_variant(conn, variant):
   else:
     return None
 
-#NEEDS TESTING
 def insert_variants_from_file(conn, variantPosFile, speciesID, chromosomeID):
   variantlist = parse_variants_from_file(variantPosFile)
   print('num variants:')
@@ -390,11 +389,17 @@ if __name__ == '__main__':
   #print(insertedGenotypeIDs)
 
 
-  ######################################################################################
-  # IN PROGRESS... code for getting variants from .012.pos files and inserting into DB #
-  ######################################################################################
-
-  # NEEDS TESTING (make sure to change above chromosome calling to chr1)
+  ##################################################
+  # GET VARIANTS FROM .012.pos FILE AND ADD TO  DB #
+  ##################################################
   #insertedVariantIDs = insert_variants_from_file(conn, '/home/mwohl/Downloads/GWASdata/chr10_282_agpv4.012.pos', maizeSpeciesID, maizeChr10ID)
   #print("num inserted variants:")
   #print(len(insertedVariantIDs))
+
+  #####################################################
+  # ...in progress... phenotype parsing and insertion #
+  #####################################################
+  phenotypeRawData = pd.read_csv('/home/mwohl/Downloads/GWASdata/5.mergedWeightNorm.LM.rankAvg.longFormat.csv', index_col=0)
+  traits = list(phenotypeRawData)
+  print(traits)
+
