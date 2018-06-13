@@ -276,6 +276,34 @@ def insert_genotype(conn, genotype):
   cur.close()
   return newID
 
+#in progress... TEST!
+def insert_trait(conn, trait):
+  cur = conn.cursor()
+  SQL = """INSERT INTO trait(trait_name)
+        VALUES (%s)
+        ON CONFLICT DO NOTHING
+        RETURNING trait_id;"""
+  arg = (trait.n,)
+  cur.execute(SQL, arg)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
+#in progress... TEST!
+def insert_traits_from_traitlist(conn, traitlist):
+  traitIDs = []
+  for traitname in traitlist:
+    print(type(traitname))
+    traitObj = trait(traitname, None, None, None)
+    insertedTraitID = insert_trait(conn, traitObj)
+    traitIDs.append(insertedTraitID)
+  return traitIDs
+     
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
     self.n = shortname
@@ -401,5 +429,8 @@ if __name__ == '__main__':
   #####################################################
   phenotypeRawData = pd.read_csv('/home/mwohl/Downloads/GWASdata/5.mergedWeightNorm.LM.rankAvg.longFormat.csv', index_col=0)
   traits = list(phenotypeRawData)
-  print(traits)
-
+  insertedTraitIDs = insert_traits_from_traitlist(conn, traits)
+  print("num inserted traits:")
+  print(len(insertedTraitIDs))
+  print("Inserted trait IDs:")
+  print(insertedTraitIDs)
