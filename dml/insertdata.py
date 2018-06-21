@@ -276,7 +276,6 @@ def insert_genotype(conn, genotype):
   cur.close()
   return newID
 
-#in progress... TEST!
 def insert_trait(conn, trait):
   cur = conn.cursor()
   SQL = """INSERT INTO trait(trait_name)
@@ -294,11 +293,37 @@ def insert_trait(conn, trait):
   else:
     return None
 
-#in progress... TEST!
+def find_trait(conn, traitName):
+  cur = conn.cursor()
+  cur.execute("SELECT trait_id FROM trait WHERE trait_name = '%s';" % traitName)
+  row = cur.fetchone()
+  if row is not None:
+    traitID = row[0]
+    cur.close()
+    return traitID
+  else:
+    return None
+
+def insert_phenotype(conn, phenotype):
+  cur = conn.cursor()
+  SQL = """INSERT INTO phenotype(phenotype_line, phenotype_trait, phenotype_value)
+        VALUES (%s, %s, %s)
+        ON CONFLICT DO NOTHING
+        RETURNING phenotype_id;"""
+  args_tuple = (phenotype.l, phenotype.t, phenotype.v)
+  cur.execute(SQL, args_tuple)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
 def insert_traits_from_traitlist(conn, traitlist):
   traitIDs = []
   for traitname in traitlist:
-    print(type(traitname))
     traitObj = trait(traitname, None, None, None)
     insertedTraitID = insert_trait(conn, traitObj)
     traitIDs.append(insertedTraitID)
@@ -377,7 +402,7 @@ if __name__ == '__main__':
   #################################################################
   # LOOK UP ID OF A HARD-CODED POPULATION USING find_population() #
   #################################################################
-  #maize282popID = find_population(conn, 'Maize282')
+  maize282popID = find_population(conn, 'Maize282')
   #print("PopulationID of Maize282:")
   #print(maize282popID)
 
@@ -429,8 +454,32 @@ if __name__ == '__main__':
   #####################################################
   phenotypeRawData = pd.read_csv('/home/mwohl/Downloads/GWASdata/5.mergedWeightNorm.LM.rankAvg.longFormat.csv', index_col=0)
   traits = list(phenotypeRawData)
-  insertedTraitIDs = insert_traits_from_traitlist(conn, traits)
-  print("num inserted traits:")
-  print(len(insertedTraitIDs))
-  print("Inserted trait IDs:")
-  print(insertedTraitIDs)
+  #insertedTraitIDs = insert_traits_from_traitlist(conn, traits)
+  #print("num inserted traits:")
+  #print(len(insertedTraitIDs))
+  #print("Inserted trait IDs:")
+  #print(insertedTraitIDs)
+
+  print(phenotypeRawData.shape)
+  #print(phenotypeRawData.head)
+  insertedPhenoIDs = []
+  for key, value in phenotypeRawData.iteritems():
+    print("***********KEY**************:")
+    print key
+    traitID = find_trait(conn, key)
+    for index, traitval in value.iteritems():
+      print("index:")
+      print(index)
+      lineID = find_line(conn, index, maize282popID)
+      if lineID is None:
+        newline = line(index, maize282popID)
+        lineID = insert_line(conn, newline)
+      print("trait value:")
+      print(traitval)
+      pheno = phenotype(lineID, traitID, traitval)
+      insertedPhenoID = insert_phenotype(conn, pheno)
+      insertedPhenoIDs.append(insertedPhenoID)
+  print("num phenotypes inserted:")
+  print(len(insertedPhenoIDs))
+  print("phenoIDs:")
+  print(insertedPhenoIDs)
