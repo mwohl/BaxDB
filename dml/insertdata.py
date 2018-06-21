@@ -304,6 +304,27 @@ def find_trait(conn, traitName):
   else:
     return None
 
+def insert_phenotypes_from_file(conn, phenotypeFile, populationID):
+  phenotypeRawData = pd.read_csv(phenotypeFile, index_col=0)
+  insertedPhenoIDs = []
+  for key, value in phenotypeRawData.iteritems():
+    print("***********KEY**************:")
+    print key
+    traitID = find_trait(conn, key)
+    for index, traitval in value.iteritems():
+      print("index:")
+      print(index)
+      lineID = find_line(conn, index, maize282popID)
+      if lineID is None:
+        newline = line(index, maize282popID)
+        lineID = insert_line(conn, newline)
+      print("trait value:")
+      print(traitval)
+      pheno = phenotype(lineID, traitID, traitval)
+      insertedPhenoID = insert_phenotype(conn, pheno)
+      insertedPhenoIDs.append(insertedPhenoID)
+  return insertedPhenoIDs
+
 def insert_phenotype(conn, phenotype):
   cur = conn.cursor()
   SQL = """INSERT INTO phenotype(phenotype_line, phenotype_trait, phenotype_value)
@@ -449,36 +470,21 @@ if __name__ == '__main__':
   #print("num inserted variants:")
   #print(len(insertedVariantIDs))
 
-  #####################################################
-  # ...in progress... phenotype parsing and insertion #
-  #####################################################
-  phenotypeRawData = pd.read_csv('/home/mwohl/Downloads/GWASdata/5.mergedWeightNorm.LM.rankAvg.longFormat.csv', index_col=0)
-  traits = list(phenotypeRawData)
+  ##################################################
+  # PARSE TRAITS FROM PHENOTYPE FILE AND ADD TO DB #
+  ##################################################
+  #phenotypeRawData = pd.read_csv('/home/mwohl/Downloads/GWASdata/5.mergedWeightNorm.LM.rankAvg.longFormat.csv', index_col=0)
+  #traits = list(phenotypeRawData)
   #insertedTraitIDs = insert_traits_from_traitlist(conn, traits)
   #print("num inserted traits:")
   #print(len(insertedTraitIDs))
   #print("Inserted trait IDs:")
   #print(insertedTraitIDs)
-
-  print(phenotypeRawData.shape)
-  #print(phenotypeRawData.head)
-  insertedPhenoIDs = []
-  for key, value in phenotypeRawData.iteritems():
-    print("***********KEY**************:")
-    print key
-    traitID = find_trait(conn, key)
-    for index, traitval in value.iteritems():
-      print("index:")
-      print(index)
-      lineID = find_line(conn, index, maize282popID)
-      if lineID is None:
-        newline = line(index, maize282popID)
-        lineID = insert_line(conn, newline)
-      print("trait value:")
-      print(traitval)
-      pheno = phenotype(lineID, traitID, traitval)
-      insertedPhenoID = insert_phenotype(conn, pheno)
-      insertedPhenoIDs.append(insertedPhenoID)
+  
+  ############################################
+  # PARSE PHENOTYPES FROM FILE AND ADD TO DB #
+  ############################################
+  insertedPhenoIDs = insert_phenotypes_from_file(conn, '/home/mwohl/Downloads/GWASdata/5.mergedWeightNorm.LM.rankAvg.longFormat.csv', maize282popID)
   print("num phenotypes inserted:")
   print(len(insertedPhenoIDs))
   print("phenoIDs:")
