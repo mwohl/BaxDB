@@ -349,6 +349,24 @@ def insert_traits_from_traitlist(conn, traitlist):
     insertedTraitID = insert_trait(conn, traitObj)
     traitIDs.append(insertedTraitID)
   return traitIDs
+
+def insert_growout(conn, growout):
+  cur = conn.cursor()
+  SQL = """INSERT INTO growout(growout_name, growout_population, growout_location, growout_year, growout_type)
+        VALUES (%s, %s, %s, %s, %s)
+        ON CONFLICT DO NOTHING
+        RETURNING growout_id;"""
+  args_tuple = (growout.n, growout.p, growout.l, growout.y, growout.t)
+  cur.execute(SQL, args_tuple)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
      
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
@@ -396,6 +414,24 @@ class phenotype:
     self.l = phenotype_line
     self.t = phenotype_trait
     self.v = phenotype_value
+
+class growout_type:
+  def __init__(self, growout_type):
+    self.t = growout_type
+
+class growout:
+  def __init__(self, growout_name, growout_population, growout_location, growout_year, growout_type)
+    self.n = growout_name
+    self.p = growout_population
+    self.l = growout_location
+    self.y = growout_year
+    self.t = growout_type
+
+class location:
+  def __init__(self, location_country, location_state, loctaion_city):
+    self.c = location_country
+    self.s = location_state
+    self.i = location_city
 
 if __name__ == '__main__':
   conn = connect()
@@ -484,8 +520,13 @@ if __name__ == '__main__':
   ############################################
   # PARSE PHENOTYPES FROM FILE AND ADD TO DB #
   ############################################
-  insertedPhenoIDs = insert_phenotypes_from_file(conn, '/home/mwohl/Downloads/GWASdata/5.mergedWeightNorm.LM.rankAvg.longFormat.csv', maize282popID)
-  print("num phenotypes inserted:")
-  print(len(insertedPhenoIDs))
-  print("phenoIDs:")
-  print(insertedPhenoIDs)
+  #insertedPhenoIDs = insert_phenotypes_from_file(conn, '/home/mwohl/Downloads/GWASdata/5.mergedWeightNorm.LM.rankAvg.longFormat.csv', maize282popID)
+  #print("num phenotypes inserted:")
+  #print(len(insertedPhenoIDs))
+  #print("phenoIDs:")
+  #print(insertedPhenoIDs)
+
+  ####################################
+  # ADD NEW HARD-CODED GROWOUT TO DB #
+  ####################################
+  #newGrowout = growout()
