@@ -350,6 +350,23 @@ def insert_traits_from_traitlist(conn, traitlist):
     traitIDs.append(insertedTraitID)
   return traitIDs
 
+def insert_growout_type(conn, growout_type):
+  cur = conn.cursor()
+  SQL = """INSERT INTO growout_type(growout_type)
+        VALUES (%s)
+        ON CONFLICT DO NOTHING
+        RETURNING growout_type_id;"""
+  arg = (growout_type.t)
+  cur.execute(SQL, arg)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
 def insert_growout(conn, growout):
   cur = conn.cursor()
   SQL = """INSERT INTO growout(growout_name, growout_population, growout_location, growout_year, growout_type)
