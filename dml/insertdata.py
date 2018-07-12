@@ -383,7 +383,24 @@ def insert_growout(conn, growout):
     return newID
   else:
     return None
-     
+
+def insert_location(conn, location):
+  cur = conn.cursor()
+  SQL = """INSERT INTO location(country, state, city, code)
+        VALUES (%s, %s, %s, %s)
+        ON CONFLICT DO NOTHING
+        RETURNING location_id;"""
+  args_tuple = (location.c, location.s, location.i, location.o)
+  cur.execute(SQL, args_tuple)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None  
+   
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
     self.n = shortname
@@ -444,10 +461,11 @@ class growout:
     self.t = growout_type
 
 class location:
-  def __init__(self, location_country, location_state, loctaion_city):
-    self.c = location_country
-    self.s = location_state
-    self.i = location_city
+  def __init__(self, location_country, location_state, loctaion_city, location_code):
+    self.c = country
+    self.s = state
+    self.i = city
+    self.o = code
 
 if __name__ == '__main__':
   conn = connect()
@@ -554,7 +572,13 @@ if __name__ == '__main__':
   #field_GrowoutType = growout_type("field")
   #field_GrowoutTypeID = insert_growout_type(conn, field_GrowoutType)
 
+  #####################################
+  # ADD NEW HARD-CODED LOCATION TO DB #
+  #####################################
+  newLocation = location(
+
   ####################################
   # ADD NEW HARD-CODED GROWOUT TO DB #
   ####################################
-  #newGrowout = growout()
+
+

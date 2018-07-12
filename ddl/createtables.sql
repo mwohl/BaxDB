@@ -54,7 +54,8 @@ CREATE TABLE location (
   location_id SERIAL PRIMARY KEY,
   country VARCHAR(75) NOT NULL,
   state VARCHAR(75),
-  city VARCHAR(75)
+  city VARCHAR(75),
+  code VARCHAR(2) NOT NULL
   );
 
 -- ---------------------
