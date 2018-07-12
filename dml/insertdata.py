@@ -461,7 +461,7 @@ class growout:
     self.t = growout_type
 
 class location:
-  def __init__(self, location_country, location_state, loctaion_city, location_code):
+  def __init__(self, country, state, city, code):
     self.c = country
     self.s = state
     self.i = city
@@ -575,7 +575,15 @@ if __name__ == '__main__':
   #####################################
   # ADD NEW HARD-CODED LOCATION TO DB #
   #####################################
-  newLocation = location(
+  #newLocation = location("United States", "Indiana", "West Lafayette", "PU")
+  #newLocation = location("United States", "New York", None, "NY")
+  #newLocation = location("United States", "Florida", None, "FL")
+  #newLocation = location("United States", "Puerto Rico", None, "PR")
+  #newLocation = location("United States", "North Carolina", None, "NC")
+  #newLocation = location("South Africa", None, None, "SA")
+  #newLocation = location("United States", "Missouri", None, "MO")
+  #newLocationID = insert_location(conn, newLocation)
+  #print(newLocationID)
 
   ####################################
   # ADD NEW HARD-CODED GROWOUT TO DB #
