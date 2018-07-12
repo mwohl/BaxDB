@@ -41,11 +41,20 @@ CREATE TABLE growout (
   growout_id SERIAL PRIMARY KEY,
   growout_name VARCHAR(75) UNIQUE NOT NULL,
   growout_population INTEGER NOT NULL REFERENCES population (population_id),
-  location_country VARCHAR(45),
-  location_state VARCHAR(45),
-  location_city VARCHAR(45),
+  growout_location INTEGER REFERENCES location (location_id),
   year INTEGER NOT NULL,
   growout_growout_type INTEGER NOT NULL REFERENCES growout_type (growout_type_id)
+  );
+
+-- -------------------------
+-- Create the location table
+-- -------------------------
+DROP TABLE IF EXISTS location;
+CREATE TABLE location (
+  location_id SERIAL PRIMARY KEY,
+  country VARCHAR(75) NOT NULL,
+  state VARCHAR(75),
+  city VARCHAR(75)
   );
 
 -- ---------------------

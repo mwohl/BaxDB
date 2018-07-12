@@ -356,7 +356,7 @@ def insert_growout_type(conn, growout_type):
         VALUES (%s)
         ON CONFLICT DO NOTHING
         RETURNING growout_type_id;"""
-  arg = (growout_type.t)
+  arg = (growout_type.t,)
   cur.execute(SQL, arg)
   row = cur.fetchone()
   if row is not None:
@@ -383,7 +383,6 @@ def insert_growout(conn, growout):
     return newID
   else:
     return None
-
      
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
@@ -437,7 +436,7 @@ class growout_type:
     self.t = growout_type
 
 class growout:
-  def __init__(self, growout_name, growout_population, growout_location, growout_year, growout_type)
+  def __init__(self, growout_name, growout_population, growout_location, growout_year, growout_type):
     self.n = growout_name
     self.p = growout_population
     self.l = growout_location
@@ -542,6 +541,18 @@ if __name__ == '__main__':
   #print(len(insertedPhenoIDs))
   #print("phenoIDs:")
   #print(insertedPhenoIDs)
+
+  #########################################
+  # ADD NEW HARD-CODED GROWOUT_TYPE TO DB #
+  #########################################
+  #greenhouse_GrowoutType = growout_type("greenhouse")
+  #greenhouse_GrowoutTypeID = insert_growout_type(conn, greenhouse_GrowoutType)
+
+  #phenotyper_GrowoutType = growout_type("phenotyper")
+  #phenotyper_GrowoutTypeID = insert_growout_type(conn, phenotyper_GrowoutType)
+
+  #field_GrowoutType = growout_type("field")
+  #field_GrowoutTypeID = insert_growout_type(conn, field_GrowoutType)
 
   ####################################
   # ADD NEW HARD-CODED GROWOUT TO DB #
