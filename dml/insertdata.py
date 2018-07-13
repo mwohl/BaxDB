@@ -367,9 +367,20 @@ def insert_growout_type(conn, growout_type):
   else:
     return None
 
+def find_growout_type(conn, growout_type):
+  cur = conn.cursor()
+  cur.execute("SELECT growout_type_id FROM growout_type WHERE growout_type = '%s';" % growout_type)
+  row = cur.fetchone()
+  if row is not None:
+    growout_type_ID = row[0]
+    cur.close()
+    return growout_type_ID
+  else:
+    return None
+
 def insert_growout(conn, growout):
   cur = conn.cursor()
-  SQL = """INSERT INTO growout(growout_name, growout_population, growout_location, growout_year, growout_type)
+  SQL = """INSERT INTO growout(growout_name, growout_population, growout_location, year, growout_growout_type)
         VALUES (%s, %s, %s, %s, %s)
         ON CONFLICT DO NOTHING
         RETURNING growout_id;"""
@@ -401,6 +412,17 @@ def insert_location(conn, location):
   else:
     return None  
    
+def find_location(conn, code):
+  cur = conn.cursor()
+  cur.execute("SELECT location_id FROM location WHERE code = '%s';" % code)
+  row = cur.fetchone()
+  if row is not None:
+    location_ID = row[0]
+    cur.close()
+    return location_ID
+  else:
+    return None
+
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
     self.n = shortname
@@ -453,12 +475,12 @@ class growout_type:
     self.t = growout_type
 
 class growout:
-  def __init__(self, growout_name, growout_population, growout_location, growout_year, growout_type):
+  def __init__(self, growout_name, growout_population, growout_location, year, growout_growout_type):
     self.n = growout_name
     self.p = growout_population
     self.l = growout_location
-    self.y = growout_year
-    self.t = growout_type
+    self.y = year
+    self.t = growout_growout_type
 
 class location:
   def __init__(self, country, state, city, code):
@@ -510,6 +532,24 @@ if __name__ == '__main__':
   #Mo17_lineID = find_line(conn, '282set_Mo17', maize282popID)
   #print("LineID of Mo17:")
   #print(Mo17_lineID)
+  
+  ###################################################################
+  # LOOK UP ID OF A HARD-CODED GROWOUT_TYPE USING find_chromosome() #
+  ###################################################################
+  fieldGrowoutTypeID = find_growout_type(conn, 'field')
+  #print("fieldGrowoutTypeID:")
+  #print(fieldGrowoutTypeID)
+  
+  ###############################################################
+  # LOOK UP ID OF A HARD-CODED LOCATION USING find_chromosome() #
+  ###############################################################
+  PUlocID = find_location(conn, 'PU')
+  NYlocID = find_location(conn, "NY")
+  FLlocID = find_location(conn, "FL")
+  PRlocID = find_location(conn, "PR")
+  NClocID = find_location(conn, "NC")
+  SAlocID = find_location(conn, "SA")
+  MOlocID = find_location(conn, "MO")
 
   ########################################################
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB #
@@ -588,5 +628,16 @@ if __name__ == '__main__':
   ####################################
   # ADD NEW HARD-CODED GROWOUT TO DB #
   ####################################
-
+  #newGrowout = growout("PU09", maize282popID, PUlocID, 2009, fieldGrowoutTypeID)
+  #newGrowout = growout("NY06", maize282popID, NYlocID, 2006, fieldGrowoutTypeID)
+  #newGrowout = growout("NY10", maize282popID, NYlocID, 2010, fieldGrowoutTypeID)
+  #newGrowout = growout("FL06", maize282popID, FLlocID, 2006, fieldGrowoutTypeID)
+  #newGrowout = growout("PR06", maize282popID, PRlocID, 2006, fieldGrowoutTypeID)
+  #newGrowout = growout("NC06", maize282popID, NClocID, 2006, fieldGrowoutTypeID)
+  #newGrowout = growout("PU10", maize282popID, PUlocID, 2010, fieldGrowoutTypeID)
+  #newGrowout = growout("SA06", maize282popID, SAlocID, 2006, fieldGrowoutTypeID)
+  #newGrowout = growout("MO06", maize282popID, MOlocID, 2006, fieldGrowoutTypeID)
+  #newGrowoutID = insert_growout(conn, newGrowout)
+  #print("new growout's ID:")
+  #print(newGrowoutID)
 
