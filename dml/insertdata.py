@@ -510,6 +510,13 @@ class gwas_algorithm:
   def __init__(self, gwas_algorithm):
     self.a = gwas_algorithm
 
+class genotype_version:
+  def __init__(self, genotype_version_name, genotype_version, reference_genome, genotype_version_population):
+    self.n = genotype_version_name
+    self.v = genotype_version
+    self.r = reference_genome
+    self.p = genotype_version_population
+
 if __name__ == '__main__':
   conn = connect()
   #########################################################
