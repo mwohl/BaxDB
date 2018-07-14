@@ -423,6 +423,23 @@ def find_location(conn, code):
   else:
     return None
 
+def insert_gwas_algorithm(conn, gwas_algorithm):
+  cur = conn.cursor()
+  SQL = """INSERT INTO gwas_algorithm(gwas_algorithm)
+        VALUES (%s)
+        ON CONFLICT DO NOTHING
+        RETURNING gwas_algorithm_id;"""
+  args = (gwas_algorithm.a,)
+  cur.execute(SQL, args)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
     self.n = shortname
@@ -488,6 +505,10 @@ class location:
     self.s = state
     self.i = city
     self.o = code
+
+class gwas_algorithm:
+  def __init__(self, gwas_algorithm):
+    self.a = gwas_algorithm
 
 if __name__ == '__main__':
   conn = connect()
@@ -640,4 +661,19 @@ if __name__ == '__main__':
   #newGrowoutID = insert_growout(conn, newGrowout)
   #print("new growout's ID:")
   #print(newGrowoutID)
+  
+  ###########################################
+  # ADD NEW HARD-CODED GWAS_ALGORITHM TO DB #
+  ###########################################
+  #newGWASalgorithm = gwas_algorithm("MLMM")
+  #newGWASalgorithm = gwas_algorithm("EMMAx")
+  #newGWASalgorithm = gwas_algorithm("GAPIT")
+  #newGWASalgorithm = gwas_algorithm("FarmCPU")
+  #newGWASalgorithmID = insert_gwas_algorithm(conn, newGWASalgorithm)
+  #print("new GWAS algorithm ID:")
+  #print(newGWASalgorithmID)
 
+  #############################################
+  # ADD NEW HARD-CODED GENOTYPE_VERSION TO DB #
+  #######################################@@####
+  

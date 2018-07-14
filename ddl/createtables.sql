@@ -164,7 +164,7 @@ DROP TABLE IF EXISTS reference_genotype;
 DROP TABLE IF EXISTS gwas_algorithm;
 CREATE TABLE gwas_algorithm (
   gwas_algorithm_id SERIAL PRIMARY KEY,
-  gwas_algorithm_name VARCHAR(45) UNIQUE NOT NULL
+  gwas_algorithm VARCHAR(45) UNIQUE NOT NULL
   );
 
 -- ------------------------
