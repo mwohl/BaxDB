@@ -72,13 +72,13 @@ CREATE TABLE line (
 -- -----------------------
 -- Create the sample table
 -- -----------------------
-DROP TABLE IF EXISTS sample;
-CREATE TABLE sample (
-  sample_id SERIAL PRIMARY KEY,
-  sample_name VARCHAR(45) NOT NULL,
-  sample_growout INTEGER NOT NULL REFERENCES growout (growout_id),
-  sample_line INTEGER NOT NULL REFERENCES line (line_id)
-  );
+--DROP TABLE IF EXISTS sample;
+--CREATE TABLE sample (
+--  sample_id SERIAL PRIMARY KEY,
+--  sample_name VARCHAR(45) NOT NULL,
+--  sample_growout INTEGER NOT NULL REFERENCES growout (growout_id),
+--  sample_line INTEGER NOT NULL REFERENCES line (line_id)
+--  );
 
 -- ---------------------------
 -- Create the chromosome table
@@ -94,12 +94,12 @@ CREATE TABLE chromosome (
 -- ---------------------------
 -- Create the nucleotide table
 -- ---------------------------
-DROP TABLE IF EXISTS nucleotide;
-CREATE TABLE nucleotide (
-  nucleotide_id SERIAL PRIMARY KEY,
-  iupac_nucleotide_code VARCHAR(10) UNIQUE NOT NULL,
-  base VARCHAR(25) NOT NULL
-  );
+--DROP TABLE IF EXISTS nucleotide;
+--CREATE TABLE nucleotide (
+--  nucleotide_id SERIAL PRIMARY KEY,
+--  iupac_nucleotide_code VARCHAR(10) UNIQUE NOT NULL,
+--  base VARCHAR(25) NOT NULL
+--  );
 
 -- -------------------------
 -- Create the variant table
@@ -154,7 +154,7 @@ CREATE TABLE phenotype (
 -- -----------------------------------
 -- Create the reference_genotype table
 -- -----------------------------------
-DROP TABLE IF EXISTS reference_genotype;
+--DROP TABLE IF EXISTS reference_genotype;
 --CREATE TABLE reference_genotype (
 --  );
 
@@ -189,6 +189,19 @@ CREATE TABLE imputation_method (
 DROP TABLE IF EXISTS population_structure;
 --CREATE TABLE population_structure (
 --  );
+
+-- -------------------------
+-- Create the gwas_run table
+-- -------------------------
+DROP TABLE IF EXISTS genotype_version;
+CREATE TABLE genotype_version (
+  genotype_version_id SERIAL PRIMARY KEY,
+  genotype_version_name VARCHAR(75) UNIQUE NOT NULL,
+  genotype_version VARCHAR(50) NOT NULL,
+  reference_genome INTEGER NOT NULL REFERENCES line (line_id),
+  genotype_version_population INTEGER NOT NULL REFERENCES population (population_id),
+  unique (genotype_version, reference_genome)
+  );
 
 -- -------------------------
 -- Create the gwas_run table

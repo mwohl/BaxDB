@@ -440,6 +440,23 @@ def insert_gwas_algorithm(conn, gwas_algorithm):
   else:
     return None
 
+def insert_genotype_version(conn, genotype_version):
+  cur = conn.cursor()
+  SQL = """INSERT INTO genotype_version(genotype_version_name, genotype_version, reference_genome, genotype_version_population)
+        VALUES (%s,%s,%s,%s)
+        ON CONFLICT DO NOTHING
+        RETURNING genotype_version_id;"""
+  args_tuple = (genotype_version.n, genotype_version.v, genotype_version.r, genotype_version.p)
+  cur.execute(SQL, args_tuple)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
     self.n = shortname
@@ -557,9 +574,7 @@ if __name__ == '__main__':
   #####################################################
   # LOOK UP ID OF A HARD-CODED LINE USING find_line() #
   #####################################################
-  #Mo17_lineID = find_line(conn, '282set_Mo17', maize282popID)
-  #print("LineID of Mo17:")
-  #print(Mo17_lineID)
+  B73lineID = find_line(conn, '282set_B73', maize282popID)
   
   ###################################################################
   # LOOK UP ID OF A HARD-CODED GROWOUT_TYPE USING find_chromosome() #
@@ -683,4 +698,7 @@ if __name__ == '__main__':
   #############################################
   # ADD NEW HARD-CODED GENOTYPE_VERSION TO DB #
   #######################################@@####
-  
+  newGenotypeVersion = genotype_version("maize282_agpv4_B73", "apgv4", B73lineID, maize282popID)
+  newGenotypeVersionID = insert_genotype_version(conn, newGenotypeVersion)
+  print("New genotype_version ID:")
+  print(newGenotypeVersionID)
