@@ -534,6 +534,9 @@ class genotype_version:
     self.r = reference_genome
     self.p = genotype_version_population
 
+class gwas_run:
+  def __init__(self, gwas_run_name, 
+
 if __name__ == '__main__':
   conn = connect()
   #########################################################
