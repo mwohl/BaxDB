@@ -535,7 +535,15 @@ class genotype_version:
     self.p = genotype_version_population
 
 class gwas_run:
-  def __init__(self, gwas_run_name, 
+  def __init__(self, gwas_run_name, gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_value, missing_line_cutoff_value):
+    self.n = gwas_run_name
+    self.t = gwas_run_trait
+    self.s = nsnps
+    self.l = nlines
+    self.a = gwas_run_gwas_algorithm
+    self.v = gwas_run_gwas_version
+    self.m = missing_snp_cutoff_value
+    self.i = missing_line_cutoff_value 
 
 if __name__ == '__main__':
   conn = connect()
