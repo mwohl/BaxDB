@@ -69,17 +69,6 @@ CREATE TABLE line (
   unique (line_name, line_population)
   );
 
--- -----------------------
--- Create the sample table
--- -----------------------
---DROP TABLE IF EXISTS sample;
---CREATE TABLE sample (
---  sample_id SERIAL PRIMARY KEY,
---  sample_name VARCHAR(45) NOT NULL,
---  sample_growout INTEGER NOT NULL REFERENCES growout (growout_id),
---  sample_line INTEGER NOT NULL REFERENCES line (line_id)
---  );
-
 -- ---------------------------
 -- Create the chromosome table
 -- ---------------------------
@@ -91,20 +80,9 @@ CREATE TABLE chromosome (
   unique (chromosome_name, chromosome_species)
   );
 
--- ---------------------------
--- Create the nucleotide table
--- ---------------------------
---DROP TABLE IF EXISTS nucleotide;
---CREATE TABLE nucleotide (
---  nucleotide_id SERIAL PRIMARY KEY,
---  iupac_nucleotide_code VARCHAR(10) UNIQUE NOT NULL,
---  base VARCHAR(25) NOT NULL
---  );
-
 -- -------------------------
 -- Create the variant table
 -- -------------------------
--- untested!
 DROP TABLE IF EXISTS variant;
 CREATE TABLE variant (
   variant_id SERIAL PRIMARY KEY,
@@ -152,13 +130,6 @@ CREATE TABLE phenotype (
   phenotype_value VARCHAR(45) NOT NULL
   );
 
--- -----------------------------------
--- Create the reference_genotype table
--- -----------------------------------
---DROP TABLE IF EXISTS reference_genotype;
---CREATE TABLE reference_genotype (
---  );
-
 -- -------------------------------
 -- Create the gwas_algorithm table
 -- -------------------------------
@@ -172,8 +143,20 @@ CREATE TABLE gwas_algorithm (
 -- Create the kinship table
 -- ------------------------
 DROP TABLE IF EXISTS kinship;
---CREATE TABLE kinship (
---  );
+CREATE TABLE kinship (
+  kinship_id SERIAL PRIMARY KEY,
+  kinship_algorithm INTEGER NOT NULL REFERENCES kinship_algorithm (kinship_algorithm_id),
+  kinship_file_path TEXT NOT NULL
+  );
+
+-- ----------------------------------
+-- Create the kinship_algorithm table
+-- ----------------------------------
+DROP TABLE IF EXISTS kinship_algorithm;
+CREATE TABLE kinship_algorithm (
+  kinship_algorithm_id SERIAL PRIMARY KEY,
+  kinship_algorithm TEXT NOT NULL
+);
 
 -- ----------------------------------
 -- Create the imputation_method table
@@ -188,12 +171,24 @@ CREATE TABLE imputation_method (
 -- Create the population_structure table
 -- -------------------------------------
 DROP TABLE IF EXISTS population_structure;
---CREATE TABLE population_structure (
---  );
+CREATE TABLE population_structure (
+  population_structure_id SERIAL PRIMARY KEY,
+  population_structure_algorithm INTEGER NOT NULL REFERENCES population_structure_algorithm (population_structure_algorithm_id),
+  population_structure_file_path TEXT NOT NULL
+  );
 
--- -------------------------
--- Create the gwas_run table
--- -------------------------
+-- -----------------------------------------------
+-- Create the population_structure_algorithm table
+-- -----------------------------------------------
+DROP TABLE IF EXISTS population_structure_algorith;
+CREATE TABLE population_structure_algorithm (
+  population_structure_algorithm_id SERIAL PRIMARY KEY,
+  population_structure_algorithm TEXT NOT NULL
+);
+
+-- ---------------------------------
+-- Create the genotype_version table
+-- ---------------------------------
 DROP TABLE IF EXISTS genotype_version;
 CREATE TABLE genotype_version (
   genotype_version_id SERIAL PRIMARY KEY,
@@ -210,7 +205,7 @@ CREATE TABLE genotype_version (
 DROP TABLE IF EXISTS gwas_run;
 CREATE TABLE gwas_run (
   gwas_run_id SERIAL PRIMARY KEY,
-  gwas_run_name VARCHAR(75),
+  gwas_run_name TEXT,
   gwas_run_trait INTEGER NOT NULL REFERENCES trait (trait_id),
   nsnps INTEGER NOT NULL,
   nlines INTEGER NOT NULL,
@@ -218,9 +213,9 @@ CREATE TABLE gwas_run (
   gwas_run_genotype_version INTEGER NOT NULL REFERENCES genotype_version (genotype_version_id),
   missing_snp_cutoff_value NUMERIC NOT NULL,
   missing_line_cutoff_value NUMERIC NOT NULL,
---  gwas_run_imputation_method INTEGER NOT NULL REFERENCES imputation_method (imputation_method_id)
---  gwas_run_kinship INTEGER NOT NULL REFERENCES kinship (kinship_id),
---  gwas_run_population_structure INTEGER NOT NULL REFERENCES population_structure (population_structure_id)
+  gwas_run_imputation_method INTEGER NOT NULL REFERENCES imputation_method (imputation_method_id)
+  gwas_run_kinship INTEGER NOT NULL REFERENCES kinship (kinship_id),
+  gwas_run_population_structure INTEGER NOT NULL REFERENCES population_structure (population_structure_id)
   );
 
 -- ----------------------------
