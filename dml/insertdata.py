@@ -534,6 +534,28 @@ class genotype_version:
     self.r = reference_genome
     self.p = genotype_version_population
 
+class imputation_method:
+  def __init__(self, imputation_method):
+    self.m = imputation_method
+
+class kinship_algorithm:
+  def __init__(self, kinship_algorithm):
+    self.a = kinship_algorithm
+
+class kinship:
+  def __init__(self, kinship_algorithm, kinship_file_path):
+    self.a = kinship_algorithm
+    self.p = kinship_file_path
+
+class population_structure_algorithm:
+  def __init__(self, population_structure_algorithm):
+    self.a = population_structure_algorithm
+
+class population_structure:
+  def __init__(self, population_structure_algorithm, population_structure_file_path):
+    self.a = population_structure_alrogithm
+    self.p = population_structure_file_path
+
 class gwas_run:
   def __init__(self, gwas_run_name, gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_value, missing_line_cutoff_value):
     self.n = gwas_run_name

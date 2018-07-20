@@ -139,15 +139,15 @@ CREATE TABLE gwas_algorithm (
   gwas_algorithm VARCHAR(45) UNIQUE NOT NULL
   );
 
--- ------------------------
--- Create the kinship table
--- ------------------------
-DROP TABLE IF EXISTS kinship;
-CREATE TABLE kinship (
-  kinship_id SERIAL PRIMARY KEY,
-  kinship_algorithm INTEGER NOT NULL REFERENCES kinship_algorithm (kinship_algorithm_id),
-  kinship_file_path TEXT NOT NULL
+-- ----------------------------------
+-- Create the imputation_method table
+-- ----------------------------------
+DROP TABLE IF EXISTS imputation_method;
+CREATE TABLE imputation_method (
+  imputation_method_id SERIAL PRIMARY KEY,
+  imputation_method TEXT UNIQUE NOT NULL
   );
+
 
 -- ----------------------------------
 -- Create the kinship_algorithm table
@@ -158,23 +158,15 @@ CREATE TABLE kinship_algorithm (
   kinship_algorithm TEXT NOT NULL
 );
 
--- ----------------------------------
--- Create the imputation_method table
--- ----------------------------------
-DROP TABLE IF EXISTS imputation_method;
-CREATE TABLE imputation_method (
-  imputation_method_id SERIAL PRIMARY KEY,
-  imputation_method_name VARCHAR(45) UNIQUE NOT NULL
-  );
 
--- -------------------------------------
--- Create the population_structure table
--- -------------------------------------
-DROP TABLE IF EXISTS population_structure;
-CREATE TABLE population_structure (
-  population_structure_id SERIAL PRIMARY KEY,
-  population_structure_algorithm INTEGER NOT NULL REFERENCES population_structure_algorithm (population_structure_algorithm_id),
-  population_structure_file_path TEXT NOT NULL
+-- ------------------------
+-- Create the kinship table
+-- ------------------------
+DROP TABLE IF EXISTS kinship;
+CREATE TABLE kinship (
+  kinship_id SERIAL PRIMARY KEY,
+  kinship_algorithm INTEGER NOT NULL REFERENCES kinship_algorithm (kinship_algorithm_id),
+  kinship_file_path TEXT NOT NULL
   );
 
 -- -----------------------------------------------
@@ -185,6 +177,17 @@ CREATE TABLE population_structure_algorithm (
   population_structure_algorithm_id SERIAL PRIMARY KEY,
   population_structure_algorithm TEXT NOT NULL
 );
+
+
+-- -------------------------------------
+-- Create the population_structure table
+-- -------------------------------------
+DROP TABLE IF EXISTS population_structure;
+CREATE TABLE population_structure (
+  population_structure_id SERIAL PRIMARY KEY,
+  population_structure_algorithm INTEGER NOT NULL REFERENCES population_structure_algorithm (population_structure_algorithm_id),
+  population_structure_file_path TEXT NOT NULL
+  );
 
 -- ---------------------------------
 -- Create the genotype_version table
