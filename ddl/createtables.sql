@@ -208,7 +208,7 @@ CREATE TABLE genotype_version (
 DROP TABLE IF EXISTS gwas_run;
 CREATE TABLE gwas_run (
   gwas_run_id SERIAL PRIMARY KEY,
-  gwas_run_name TEXT,
+  gwas_run_name TEXT NOT NULL UNIQUE,
   gwas_run_trait INTEGER NOT NULL REFERENCES trait (trait_id),
   nsnps INTEGER NOT NULL,
   nlines INTEGER NOT NULL,
