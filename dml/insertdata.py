@@ -557,7 +557,7 @@ class population_structure:
     self.p = population_structure_file_path
 
 class gwas_run:
-  def __init__(self, gwas_run_name, gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_value, missing_line_cutoff_value):
+  def __init__(self, gwas_run_name, gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_value, missing_line_cutoff_value, gwas_run_imputation_method, gwas_run_kinship, gwas_run_population_structure):
     self.n = gwas_run_name
     self.t = gwas_run_trait
     self.s = nsnps
@@ -565,7 +565,10 @@ class gwas_run:
     self.a = gwas_run_gwas_algorithm
     self.v = gwas_run_gwas_version
     self.m = missing_snp_cutoff_value
-    self.i = missing_line_cutoff_value 
+    self.i = missing_line_cutoff_value
+    self.p = gwas_run_imputation_method
+    self.k = gwas_run_kinship
+    self.o = gwas_run_population_structure
 
 if __name__ == '__main__':
   conn = connect()
