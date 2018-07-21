@@ -457,6 +457,108 @@ def insert_genotype_version(conn, genotype_version):
   else:
     return None
 
+def insert_imputation_method(conn, imputation_method):
+  cur = conn.cursor()
+  SQL = """INSERT INTO imputation_method(imputation_method)
+        VALUES (%s)
+        ON CONFLICT DO NOTHING
+        RETURNING imputation_method_id;"""
+  args = (imputation_method.m,)
+  cur.execute(SQL, args)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
+def insert_kinship_algorithm(conn, kinship_algorithm):
+  cur = conn.cursor()
+  SQL = """INSERT INTO kinship_algorithm(kinship_algorithm)
+        VALUES (%s)
+        ON CONFLICT DO NOTHING
+        RETURNING kinship_algorithm_id;"""
+  args = (kinship_algorithm.a,)
+  cur.execute(SQL, args)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
+def insert_kinship(conn, kinship):
+  cur = conn.cursor()
+  SQL = """INSERT INTO kinship(kinship_algorithm, kinship_file_path)
+        VALUES (%s,%s)
+        ON CONFLICT DO NOTHING
+        RETURNING kinship_id;"""
+  args = (kinship.a, kinship.p)
+  cur.execute(SQL, args)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
+def insert_population_structure_algorithm(conn, population_structure_algorithm):
+  cur = conn.cursor()
+  SQL = """INSERT INTO population_structure_algorithm(population_structure_algorithm)
+        VALUES (%s)
+        ON CONFLICT DO NOTHING
+        RETURNING population_structure_algorithm_id;"""
+  args = (population_structure_algorithm.a,)
+  cur.execute(SQL, args)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
+def insert_population_structure(conn, population_structure):
+  cur = conn.cursor()
+  SQL = """INSERT INTO population_structure(population_structure_algorithm, population_structure_file_path)
+        VALUES (%s,%s)
+        ON CONFLICT DO NOTHING
+        RETURNING population_structure_id;"""
+  args = (population_structure.a, population_structure.p)
+  cur.execute(SQL, args)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
+def insert_gwas_run(conn, gwas_run):
+  cur = conn.cursor()
+  SQL = """INSERT INTO gwas_run(gwas_run_name, gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_values, missing_line_cutoff_value, gwas_run_imputation_method, gwas_run_kinship, gwas_run_population_structure)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT DO NOTHING
+        RETURNING gwas_run_id;"""
+  args = (gwas_run.n, gwas_run.t, gwas_run.s, gwas_run.l, gwas_run.a, gwas_run.v, gwas_run.m, gwas_run.i, gwas_run.p, gwas_run.k, gwas_run.o)
+  cur.execute(SQL, args)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
     self.n = shortname
@@ -563,7 +665,7 @@ class gwas_run:
     self.s = nsnps
     self.l = nlines
     self.a = gwas_run_gwas_algorithm
-    self.v = gwas_run_gwas_version
+    self.v = gwas_run_genotype_version
     self.m = missing_snp_cutoff_value
     self.i = missing_line_cutoff_value
     self.p = gwas_run_imputation_method
