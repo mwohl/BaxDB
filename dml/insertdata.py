@@ -835,8 +835,50 @@ if __name__ == '__main__':
 
   #############################################
   # ADD NEW HARD-CODED GENOTYPE_VERSION TO DB #
-  #######################################@@####
-  newGenotypeVersion = genotype_version("maize282_agpv4_B73", "apgv4", B73lineID, maize282popID)
-  newGenotypeVersionID = insert_genotype_version(conn, newGenotypeVersion)
-  print("New genotype_version ID:")
-  print(newGenotypeVersionID)
+  #############################################
+  #newGenotypeVersion = genotype_version("maize282_agpv4_B73", "apgv4", B73lineID, maize282popID)
+  #newGenotypeVersionID = insert_genotype_version(conn, newGenotypeVersion)
+  #print("New genotype_version ID:")
+  #print(newGenotypeVersionID)
+
+  ##############################################
+  # ADD NEW HARD-CODED IMPUTATION_METHOD TO DB #
+  ##############################################
+  #newImputationMethod = imputation_method("impute to major allele")
+  #newImputationMethod = imputation_method("impute to minor allele")
+  #newImputationMethod = imputation_method("impute to average allele")
+  #newImputationMethod = imputation_method("IMPUTE")
+  #newImputationMethod = imputation_method("BEAGLE")
+  #newImputationMethodID = insert_imputation_method(conn, newImputationMethod)
+  #print("Imputatin Method ID:")
+  #print(newImputationMethodID)
+
+  ##############################################
+  # ADD NEW HARD-CODED KINSHIP_ALGORITHM TO DB #
+  ##############################################
+  #newKinshipAlgorithm = kinship_algorithm("loiselle")
+  #newKinshipAlgorithm = kinship_algorithm("van raden")
+  #newKinshipAlgorithmID = insert_kinship_algorithm(conn, newKinshipAlgorithm)
+  #print("Kinship Algorithm ID:")
+  #print(newKinshipAlgorithmID)
+
+  ####################################
+  # ADD NEW HARD-CODED KINSHIP TO DB #
+  ####################################
+  
+
+  ###########################################################
+  # ADD NEW HARD-CODED POPULATION_STRUCTURE_ALGORITHM TO DB #
+  ###########################################################
+  #newPopulationStructureAlgorithm = population_structure_algorithm("Eigenstrat")
+  #newPopulationStructureAlgorithm = population_structure_algorithm("STRUCTURE")
+  #newPopulationStructureAlgorithm = population_structure_algorithm("FastSTRUCTURE")
+  #newPopulationStructureAlgorithmID = insert_population_structure_algorithm(conn, newPopulationStructureAlgorithm)
+  #print("pop structure algorithm ID:")
+  #print(newPopulationStructureAlgorithmID)
+
+  #################################################
+  # ADD NEW HARD-CODED POPULATION_STRUCTURE TO DB #
+  #################################################
+
+
