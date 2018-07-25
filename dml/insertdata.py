@@ -491,6 +491,17 @@ def insert_kinship_algorithm(conn, kinship_algorithm):
   else:
     return None
 
+def find_kinship_algorithm(conn, algorithm):
+  cur = conn.cursor()
+  cur.execute("SELECT kinship_algorithm_id FROM kinship_algorithm WHERE kinship_algorithm = '%s';" % algorithm)
+  row = cur.fetchone()
+  if row is not None:
+    kinship_algorithm_ID = row[0]
+    cur.close()
+    return kinship_algorithm_ID
+  else:
+    return None
+
 def insert_kinship(conn, kinship):
   cur = conn.cursor()
   SQL = """INSERT INTO kinship(kinship_algorithm, kinship_file_path)
@@ -525,6 +536,17 @@ def insert_population_structure_algorithm(conn, population_structure_algorithm):
   else:
     return None
 
+def find_population_structure_algorithm(conn, algorithm):
+  cur = conn.cursor()
+  cur.execute("SELECT population_structure_algorithm_id FROM population_structure_algorithm WHERE population_structure_algorithm = '%s';" % algorithm)
+  row = cur.fetchone()
+  if row is not None:
+    population_structure_algorithm_ID = row[0]
+    cur.close()
+    return population_structure_algorithm_ID
+  else:
+    return None
+
 def insert_population_structure(conn, population_structure):
   cur = conn.cursor()
   SQL = """INSERT INTO population_structure(population_structure_algorithm, population_structure_file_path)
@@ -541,6 +563,15 @@ def insert_population_structure(conn, population_structure):
     return newID
   else:
     return None
+
+def parse_unique_runs_from_gwas_results_file(filepath):
+  gwas_runs = []
+  df = pd.read_csv(filepath)
+  for index, row in df.iterrows():
+    gwas_run = [row['trait'],row['nSNPs'],row['nLines']]
+    if gwas_run not in gwas_runs:
+      gwas_runs.append(gwas_run)
+  return gwas_runs
 
 def insert_gwas_run(conn, gwas_run):
   cur = conn.cursor()
@@ -655,7 +686,7 @@ class population_structure_algorithm:
 
 class population_structure:
   def __init__(self, population_structure_algorithm, population_structure_file_path):
-    self.a = population_structure_alrogithm
+    self.a = population_structure_algorithm
     self.p = population_structure_file_path
 
 class gwas_run:
@@ -862,10 +893,20 @@ if __name__ == '__main__':
   #print("Kinship Algorithm ID:")
   #print(newKinshipAlgorithmID)
 
+  ###############################################################################
+  # LOOK UP ID OF A HARD-CODED KINSHIP_ALGORITHM USING find_kinship_algorithm() #
+  ###############################################################################
+  #VanRadenID = find_kinship_algorithm(conn, "van raden")
+  #print("Van Raden kinship alg ID:")
+  #print(VanRadenID)  
+
   ####################################
   # ADD NEW HARD-CODED KINSHIP TO DB #
   ####################################
-  
+  #newKinship = kinship(VanRadenID, "/opt/BaxDB/file_storage/kinship_files/4.AstleBalding.synbreed.kinship.csv")
+  #newKinshipID = insert_kinship(conn, newKinship)
+  #print("New kinship ID:")
+  #print(newKinshipID)
 
   ###########################################################
   # ADD NEW HARD-CODED POPULATION_STRUCTURE_ALGORITHM TO DB #
@@ -877,8 +918,26 @@ if __name__ == '__main__':
   #print("pop structure algorithm ID:")
   #print(newPopulationStructureAlgorithmID)
 
+  #########################################################################################################
+  # LOOK UP ID OF A HARD-CODED POPULATION_STRUCTURE_ALGORITHM USING find_population_structure_algorithm() #
+  #########################################################################################################
+  #EigenstratID = find_population_structure_algorithm(conn, "Eigenstrat")
+  #print("Eigenstrat pop str alg ID:")
+  #print(EigenstratID)
+
   #################################################
   # ADD NEW HARD-CODED POPULATION_STRUCTURE TO DB #
   #################################################
+  #newPopulationStructure = population_structure(EigenstratID, "/opt/BaxDB/file_storage/population_structure_files/4.Eigenstrat.population.structure.10PCs.csv")
+  #newPopulationStructureID = insert_population_structure(conn, newPopulationStructure)
+  #print("New population structure ID:")
+  #print(newPopulationStructureID)
 
-
+  ###########################################
+  # PARSE GWAS_RUNS FROM FILE AND ADD TO DB #
+  ###########################################
+  gwas_run_list = parse_unique_runs_from_gwas_results_file('/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv')
+  print("num unique gwas_runs in results file:")
+  print(len(gwas_run_list))
+  for run in gwas_run_list:
+    print(run)  
