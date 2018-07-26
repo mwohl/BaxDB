@@ -208,7 +208,6 @@ CREATE TABLE genotype_version (
 DROP TABLE IF EXISTS gwas_run;
 CREATE TABLE gwas_run (
   gwas_run_id SERIAL PRIMARY KEY,
-  gwas_run_name TEXT NOT NULL UNIQUE,
   gwas_run_trait INTEGER NOT NULL REFERENCES trait (trait_id),
   nsnps INTEGER NOT NULL,
   nlines INTEGER NOT NULL,
@@ -216,9 +215,13 @@ CREATE TABLE gwas_run (
   gwas_run_genotype_version INTEGER NOT NULL REFERENCES genotype_version (genotype_version_id),
   missing_snp_cutoff_value NUMERIC NOT NULL,
   missing_line_cutoff_value NUMERIC NOT NULL,
+  minor_allele_frequency_cutoff_value NUMERIC NOT NULL,
   gwas_run_imputation_method INTEGER NOT NULL REFERENCES imputation_method (imputation_method_id)
   gwas_run_kinship INTEGER NOT NULL REFERENCES kinship (kinship_id),
-  gwas_run_population_structure INTEGER NOT NULL REFERENCES population_structure (population_structure_id)
+  gwas_run_population_structure INTEGER NOT NULL REFERENCES population_structure (population_structure_id),
+  -- not sure if it will work to name a unique constraint in table creation statement like so:
+  unique unique_combination_of_all_fields (gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_value, missing_line_cutoff_value, minor_allele_frequency_cutoff_value, gwas_run_imputation_method, gwas_run_kinship, gwas_run_population_structure)
+  --unique (gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_value, missing_line_cutoff_value, minor_allele_frequency_cutoff_value, gwas_run_imputation_method, gwas_run_kinship, gwas_run_population_structure)
   );
 
 -- ----------------------------

@@ -575,11 +575,11 @@ def parse_unique_runs_from_gwas_results_file(filepath):
 
 def insert_gwas_run(conn, gwas_run):
   cur = conn.cursor()
-  SQL = """INSERT INTO gwas_run(gwas_run_name, gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_values, missing_line_cutoff_value, gwas_run_imputation_method, gwas_run_kinship, gwas_run_population_structure)
+  SQL = """INSERT INTO gwas_run(gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_values, missing_line_cutoff_value, minor_allele_frequency_cutoff_value, gwas_run_imputation_method, gwas_run_kinship, gwas_run_population_structure)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT DO NOTHING
         RETURNING gwas_run_id;"""
-  args = (gwas_run.n, gwas_run.t, gwas_run.s, gwas_run.l, gwas_run.a, gwas_run.v, gwas_run.m, gwas_run.i, gwas_run.p, gwas_run.k, gwas_run.o)
+  args = (gwas_run.t, gwas_run.s, gwas_run.l, gwas_run.a, gwas_run.v, gwas_run.m, gwas_run.i, gwas_run.n, gwas_run.p, gwas_run.k, gwas_run.o)
   cur.execute(SQL, args)
   row = cur.fetchone()
   if row is not None:
@@ -690,8 +690,7 @@ class population_structure:
     self.p = population_structure_file_path
 
 class gwas_run:
-  def __init__(self, gwas_run_name, gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_value, missing_line_cutoff_value, gwas_run_imputation_method, gwas_run_kinship, gwas_run_population_structure):
-    self.n = gwas_run_name
+  def __init__(self, gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_value, missing_line_cutoff_value, minor_allele_frequency_cutoff_value, gwas_run_imputation_method, gwas_run_kinship, gwas_run_population_structure):
     self.t = gwas_run_trait
     self.s = nsnps
     self.l = nlines
@@ -699,6 +698,7 @@ class gwas_run:
     self.v = gwas_run_genotype_version
     self.m = missing_snp_cutoff_value
     self.i = missing_line_cutoff_value
+    self.n = minor_allele_frequency_cutoff_value
     self.p = gwas_run_imputation_method
     self.k = gwas_run_kinship
     self.o = gwas_run_population_structure
