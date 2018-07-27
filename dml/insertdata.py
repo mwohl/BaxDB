@@ -564,6 +564,72 @@ def insert_population_structure(conn, population_structure):
   else:
     return None
 
+def find_gwas_algorithm(conn, gwas_algorithm):
+  cur = conn.cursor()
+  cur.execute("SELECT gwas_algorithm_id FROM gwas_algorithm WHERE gwas_algorithm = '%s';" % gwas_algorithm)
+  row = cur.fetchone()
+  if row is not None:
+    gwas_algorithm_ID = row[0]
+    cur.close()
+    return gwas_algorithm_ID
+  else:
+    return None
+
+def find_genotype_version(conn, genotype_version_name):
+  cur = conn.cursor()
+  cur.execute("SELECT genotype_version_id FROM genotype_version WHERE genotype_version_name = '%s';" % genotype_version_name)
+  row = cur.fetchone()
+  if row is not None:
+    genotype_version_ID = row[0]
+    cur.close()
+    return genotype_version_ID
+  else:
+    return None
+
+def find_imputation_method(conn, imputation_method):
+  cur = conn.cursor()
+  cur.execute("SELECT imputation_method_id FROM imputation_method WHERE imputation_method = '%s';" % imputation_method)
+  row = cur.fetchone()
+  if row is not None:
+    imputation_method_ID = row[0]
+    cur.close()
+    return imputation_method_ID
+  else:
+    return None
+
+def find_kinship(conn, kinship_file_path):
+  cur = conn.cursor()
+  cur.execute("SELECT kinship_id FROM kinship WHERE kinship_file_path = '%s';" % kinship_file_path)
+  row = cur.fetchone()
+  if row is not None:
+    kinship_ID = row[0]
+    cur.close()
+    return kinship_ID
+  else:
+    return None
+
+def find_population_structure(conn, population_structure_file_path):
+  cur = conn.cursor()
+  cur.execute("SELECT population_structure_id FROM population_structure WHERE population_structure_file_path = '%s';" % population_structure_file_path)
+  row = cur.fetchone()
+  if row is not None:
+    population_structure_ID = row[0]
+    cur.close()
+    return population_structure_ID
+  else:
+    return None
+
+def find_trait(conn, trait_name):
+  cur = conn.cursor()
+  cur.execute("SELECT trait_id FROM trait WHERE trait_name = '%s';" % trait_name)
+  row = cur.fetchone()
+  if row is not None:
+    trait_ID = row[0]
+    cur.close()
+    return trait_ID
+  else:
+    return None
+
 def parse_unique_runs_from_gwas_results_file(filepath):
   gwas_runs = []
   df = pd.read_csv(filepath)
@@ -575,7 +641,7 @@ def parse_unique_runs_from_gwas_results_file(filepath):
 
 def insert_gwas_run(conn, gwas_run):
   cur = conn.cursor()
-  SQL = """INSERT INTO gwas_run(gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_values, missing_line_cutoff_value, minor_allele_frequency_cutoff_value, gwas_run_imputation_method, gwas_run_kinship, gwas_run_population_structure)
+  SQL = """INSERT INTO gwas_run(gwas_run_trait, nsnps, nlines, gwas_run_gwas_algorithm, gwas_run_genotype_version, missing_snp_cutoff_value, missing_line_cutoff_value, minor_allele_frequency_cutoff_value, gwas_run_imputation_method, gwas_run_kinship, gwas_run_population_structure)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT DO NOTHING
         RETURNING gwas_run_id;"""
@@ -589,6 +655,16 @@ def insert_gwas_run(conn, gwas_run):
     return newID
   else:
     return None
+
+def insert_gwas_runs_from_gwas_results_file(conn, gwas_results_file, gwasRunAlgorithmID, gwasRunGenotypeVersionID, missing_snp_cutoff_value, missing_line_cutoff_value, minor_allele_frequency_cutoff_value, gwasRunImputationMethodID, gwasRunKinshipID, gwasRunPopulationStructureID):
+  gwas_run_list = parse_unique_runs_from_gwas_results_file(gwas_results_file)
+  insertedGwasRunIDs = []
+  for gwas_run_item in gwas_run_list:
+    traitID = find_trait(conn, gwas_run_item[0])
+    gwas_run_obj = gwas_run(traitID, gwas_run_item[1], gwas_run_item[2], gwasRunAlgorithmID, gwasRunGenotypeVersionID, missing_snp_cutoff_value, missing_line_cutoff_value, minor_allele_frequency_cutoff_value, gwasRunImputationMethodID, gwasRunKinshipID, gwasRunPopulationStructureID)
+    insertedGwasRunID = insert_gwas_run(conn, gwas_run_obj)
+    insertedGwasRunIDs.append(insertedGwasRunID)
+  return insertedGwasRunIDs
 
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
@@ -889,6 +965,7 @@ if __name__ == '__main__':
   ##############################################
   #newKinshipAlgorithm = kinship_algorithm("loiselle")
   #newKinshipAlgorithm = kinship_algorithm("van raden")
+  #newKinshipAlgorithm = kinship_algorithm("Synbreed_realizedAB")
   #newKinshipAlgorithmID = insert_kinship_algorithm(conn, newKinshipAlgorithm)
   #print("Kinship Algorithm ID:")
   #print(newKinshipAlgorithmID)
@@ -933,11 +1010,44 @@ if __name__ == '__main__':
   #print("New population structure ID:")
   #print(newPopulationStructureID)
 
+  #############################################
+  # LOOK UP ID OF A HARD-CODED GWAS_ALGORITHM #
+  #############################################
+  MLMMalgorithmID = find_gwas_algorithm(conn, "MLMM")
+  #print("MLMM algorithm ID:")
+  #print(MLMMalgorithmID)
+
+  ###############################################
+  # LOOK UP ID OF A HARD-CODED GENOTYPE_VERSION #
+  ###############################################
+  B73_agpv4_maize282_versionID = find_genotype_version(conn, "B73 RefGen_v4_AGPv4_Maize282")
+  #print("B73 agpv4 maize282 genotype version: ")
+  #print(B73_agpv4_maize282_versionID)  
+
+  ################################################
+  # LOOK UP ID OF A HARD-CODED IMPUTATION_METHOD #
+  ################################################
+  majorAlleleImputationID = find_imputation_method(conn, "impute to major allele")
+  #print("major allele imputation ID: ")
+  #print(majorAlleleImputationID)  
+
+  ######################################
+  # LOOK UP ID OF A HARD-CODED KINSHIP #
+  ######################################
+  kinshipID = find_kinship(conn, "/opt/BaxDB/file_storage/kinship_files/4.AstleBalding.synbreed.kinship.csv")
+  #print("kinshipID: ")
+  #print(kinshipID)  
+
+  ###################################################
+  # LOOK UP ID OF A HARD-CODED POPULATION_STRUCTURE #
+  ###################################################
+  populationStructureID = find_population_structure(conn, "/opt/BaxDB/file_storage/population_structure_files/4.Eigenstrat.population.structure.10PCs.csv")
+  #print("population structure ID: ")
+  #print(populationStructureID)
+
   ###########################################
   # PARSE GWAS_RUNS FROM FILE AND ADD TO DB #
   ###########################################
-  gwas_run_list = parse_unique_runs_from_gwas_results_file('/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv')
-  print("num unique gwas_runs in results file:")
-  print(len(gwas_run_list))
-  for run in gwas_run_list:
-    print(run)  
+  insertedGwasRunIDs = insert_gwas_runs_from_gwas_results_file(conn, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv', MLMMalgorithmID, B73_agpv4_maize282_versionID, 0.2, 0.2, 0.1, majorAlleleImputationID, kinshipID, populationStructureID)
+  print("Inserted gwas_run IDs:")
+  print(insertedGwasRunIDs)
