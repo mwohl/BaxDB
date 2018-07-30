@@ -666,6 +666,25 @@ def insert_gwas_runs_from_gwas_results_file(conn, gwas_results_file, gwasRunAlgo
     insertedGwasRunIDs.append(insertedGwasRunID)
   return insertedGwasRunIDs
 
+def insert_gwas_results_from_file(conn, gwas_results_file):
+  
+def insert_gwas_result(conn, gwas_result):
+  cur = conn.cursor()
+  SQL = """INSERT INTO gwas_result()
+        VALUES ()
+        ON CONFLICT DO NOTHING
+        RETURNING gwas_result_id;"""
+  args = ()
+  cur.execute(SQL, args)
+  row = cur.fetchone()
+  if row is not None:
+    newID = row[0]
+    conn.commit()
+    cur.close()
+    return newID
+  else:
+    return None
+
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
     self.n = shortname
@@ -778,6 +797,19 @@ class gwas_run:
     self.p = gwas_run_imputation_method
     self.k = gwas_run_kinship
     self.o = gwas_run_population_structure
+
+class gwas_result:
+  def __init__(self, gwas_result_chromosome, basepair, gwas_result_gwas_run, pval, cofactor, _order, null_pval, model_added_pval, model, pcs):
+    self.c = gwas_result_chromosome
+    self.b = basepair
+    self.r = gwas_result_gwas_run
+    self.p = pval
+    self.o = cofactor
+    self.d = _order
+    self.n = null_pval
+    self.a = model_added_pval
+    self.m = model
+    self.s = pcs
 
 if __name__ == '__main__':
   conn = connect()
@@ -1048,6 +1080,13 @@ if __name__ == '__main__':
   ###########################################
   # PARSE GWAS_RUNS FROM FILE AND ADD TO DB #
   ###########################################
-  insertedGwasRunIDs = insert_gwas_runs_from_gwas_results_file(conn, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv', MLMMalgorithmID, B73_agpv4_maize282_versionID, 0.2, 0.2, 0.1, majorAlleleImputationID, kinshipID, populationStructureID)
-  print("Inserted gwas_run IDs:")
-  print(insertedGwasRunIDs)
+  #insertedGwasRunIDs = insert_gwas_runs_from_gwas_results_file(conn, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv', MLMMalgorithmID, B73_agpv4_maize282_versionID, 0.2, 0.2, 0.1, majorAlleleImputationID, kinshipID, populationStructureID)
+  #print("Inserted gwas_run IDs:")
+  #print(insertedGwasRunIDs)
+
+  ##############################################
+  # PARSE GWAS_RESULTS FROM FILE AND ADD TO DB #
+  ##############################################
+  insertedGwasResultIDs = insert_gwas_results_from_file(conn, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv')
+  print("Inserted gwas result IDs: ")
+  print(insertedGwasResultIDs)
