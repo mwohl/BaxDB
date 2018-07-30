@@ -232,11 +232,13 @@ CREATE TABLE gwas_result (
   gwas_result_id SERIAL PRIMARY KEY,
   gwas_result_chromosome INTEGER NOT NULL REFERENCES chromosome (chromosome_id),
   basepair INTEGER NOT NULL CHECK (basepair > 0),
-  gwas_result_trait INTEGER NOT NULL REFERENCES trait (trait_id),
-  snp NUMERIC,
-  logp NUMERIC,
-  null_logp NUMERIC,
+  gwas_result_gwas_run INTEGER NOT NULL REFERENCES gwas_run (gwas_run_id),
+  pval NUMERIC NOT NULL,
   cofactor NUMERIC CHECK (cofactor > 0),
   _order NUMERIC CHECK (_order > 0),
-  gwas_result_gwas_run INTEGER NOT NULL REFERENCES gwas_run (gwas_run_id)
+  null_pval NUMERIC CHECK (null_pval > 0),
+  model_added_pval NUMERIC CHECK (model_added_pval > 0),
+  model TEXT,
+  pcs INTEGER[],
+  unique (chromosome, basepair, gwas_result_gwas_run) 
   );
