@@ -677,13 +677,23 @@ def find_gwas_run(conn, gwas_algorithm, missing_snp_cutoff_value, missing_line_c
   else:
     return None
 
-def insert_gwas_results_from_file(conn, gwas_results_file, gwas_algorithm_ID, missing_snp_cutoff_value, missing_line_cutoff_value, imputationMethodID, genotypeVersionID, kinshipID, populationStructureID, minor_allele_frequency_cutoff_value):
+def insert_gwas_results_from_file(conn, speciesID, gwas_results_file, gwas_algorithm_ID, missing_snp_cutoff_value, missing_line_cutoff_value, imputationMethodID, genotypeVersionID, kinshipID, populationStructureID, minor_allele_frequency_cutoff_value):
+  new_gwas_result_IDs = []
   df = pd.read_csv(gwas_results_file)
   for index, row in df.iterrows():
     trait = row['trait']
     traitID = find_trait(conn, trait)
     gwas_run_ID = find_gwas_run(conn, gwas_algorithm_ID, missing_snp_cutoff_value, missing_line_cutoff_value, imputationMethodID, traitID, row['nSNPs'], row['nLines'], genotypeVersionID, kinshipID, populationStructureID, minor_allele_frequency_cutoff_value)
-    print(gwas_run_ID)
+    snp = row['SNP']
+    snp_list = snp.split("_")
+    chromosome = snp_list[0]
+    chromosome = "chr"+str(chromosome)
+    chromosomeID = find_chromosome(conn, chromosome, speciesID)
+    basepair = snp_list[1]
+    new_gwas_result = gwas_result(chromosomeID, basepair, gwas_run_ID, row['pval'], row['cofactor'], row['order'], row['nullPval'], row['modelAddedPval'], row['model'], row['PCs'])
+    new_gwas_result_ID = insert_gwas_result(conn, new_gwas_result)
+    new_gwas_result_IDs.append(new_gwas_result_ID)
+  return new_gwas_result_IDs
 
 def insert_gwas_result(conn, gwas_result):
   cur = conn.cursor()
@@ -847,7 +857,7 @@ if __name__ == '__main__':
   ###########################################################
   # LOOK UP ID OF A HARD-CODED SPECIES USING find_species() #
   ###########################################################
-  #maizeSpeciesID = find_species(conn, 'maize')
+  maizeSpeciesID = find_species(conn, 'maize')
   #print("SpeciesID of maize:")
   #print(maizeSpeciesID)
 
@@ -1109,6 +1119,6 @@ if __name__ == '__main__':
   ##############################################
   # PARSE GWAS_RESULTS FROM FILE AND ADD TO DB #
   ##############################################
-  insertedGwasResultIDs = insert_gwas_results_from_file(conn, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv', MLMMalgorithmID, 0.2, 0.2, majorAlleleImputationID, B73_agpv4_maize282_versionID, kinshipID, populationStructureID, 0.1)
+  insertedGwasResultIDs = insert_gwas_results_from_file(conn, maizeSpeciesID, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv', MLMMalgorithmID, 0.2, 0.2, majorAlleleImputationID, B73_agpv4_maize282_versionID, kinshipID, populationStructureID, 0.1)
   #print("Inserted gwas result IDs: ")
   #print(insertedGwasResultIDs)
