@@ -666,15 +666,32 @@ def insert_gwas_runs_from_gwas_results_file(conn, gwas_results_file, gwasRunAlgo
     insertedGwasRunIDs.append(insertedGwasRunID)
   return insertedGwasRunIDs
 
-def insert_gwas_results_from_file(conn, gwas_results_file):
-  
+def find_gwas_run(conn, gwas_algorithm, missing_snp_cutoff_value, missing_line_cutoff_value, gwas_run_imputation_method, gwas_run_trait, nsnps, nlines, gwas_run_genotype_version, gwas_run_kinship, gwas_run_population_structure, minor_allele_frequency_cutoff_value):
+  cur = conn.cursor()
+  cur.execute("SELECT gwas_run_id FROM gwas_run WHERE gwas_run_gwas_algorithm = '%s' AND missing_snp_cutoff_value = '%s' AND missing_line_cutoff_value = '%s' AND gwas_run_imputation_method = '%s' AND gwas_run_trait = '%s' AND nsnps = '%s' AND nlines = '%s' AND gwas_run_genotype_version = '%s' AND gwas_run_kinship = '%s' AND gwas_run_population_structure = '%s' AND minor_allele_frequency_cutoff_value = '%s';" % (gwas_algorithm, missing_snp_cutoff_value, missing_line_cutoff_value, gwas_run_imputation_method, gwas_run_trait, nsnps, nlines, gwas_run_genotype_version, gwas_run_kinship, gwas_run_population_structure, minor_allele_frequency_cutoff_value))
+  row = cur.fetchone()
+  if row is not None:
+    gwas_run_ID = row[0]
+    cur.close()
+    return gwas_run_ID
+  else:
+    return None
+
+def insert_gwas_results_from_file(conn, gwas_results_file, gwas_algorithm_ID, missing_snp_cutoff_value, missing_line_cutoff_value, imputationMethodID, genotypeVersionID, kinshipID, populationStructureID, minor_allele_frequency_cutoff_value):
+  df = pd.read_csv(gwas_results_file)
+  for index, row in df.iterrows():
+    trait = row['trait']
+    traitID = find_trait(conn, trait)
+    gwas_run_ID = find_gwas_run(conn, gwas_algorithm_ID, missing_snp_cutoff_value, missing_line_cutoff_value, imputationMethodID, traitID, row['nSNPs'], row['nLines'], genotypeVersionID, kinshipID, populationStructureID, minor_allele_frequency_cutoff_value)
+    print(gwas_run_ID)
+
 def insert_gwas_result(conn, gwas_result):
   cur = conn.cursor()
-  SQL = """INSERT INTO gwas_result()
-        VALUES ()
+  SQL = """INSERT INTO gwas_result(gwas_result_chromosome, basepair, gwas_result_gwas_run, pval, cofactor, _order, null_pval, model_added_pval, model, pcs)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT DO NOTHING
         RETURNING gwas_result_id;"""
-  args = ()
+  args = (gwas_result.c, gwas_result.b, gwas_result.r, gwas_result.p, gwas_result.o, gwas_result.d, gwas_result.n, gwas_result.a, gwas_result.m, gwas_result.s)
   cur.execute(SQL, args)
   row = cur.fetchone()
   if row is not None:
@@ -1084,9 +1101,14 @@ if __name__ == '__main__':
   #print("Inserted gwas_run IDs:")
   #print(insertedGwasRunIDs)
 
+  #######################################
+  # LOOK UP ID OF A HARD-CODED GWAS_RUN #
+  #######################################
+   #gwasRunID = find_gwas_run(conn, MLMMalgorithmID, 0.2, 0.2, majorAlleleImputationID, ---, ---, ---, B73_agpv4_maize282_versionID, kinshipID, populationStructureID, 0.1) 
+
   ##############################################
   # PARSE GWAS_RESULTS FROM FILE AND ADD TO DB #
   ##############################################
-  insertedGwasResultIDs = insert_gwas_results_from_file(conn, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv')
-  print("Inserted gwas result IDs: ")
-  print(insertedGwasResultIDs)
+  insertedGwasResultIDs = insert_gwas_results_from_file(conn, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv', MLMMalgorithmID, 0.2, 0.2, majorAlleleImputationID, B73_agpv4_maize282_versionID, kinshipID, populationStructureID, 0.1)
+  #print("Inserted gwas result IDs: ")
+  #print(insertedGwasResultIDs)
