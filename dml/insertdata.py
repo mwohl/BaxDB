@@ -1,5 +1,6 @@
 from configparser import ConfigParser
 import pandas as pd
+import numpy as np
 import psycopg2
 import csv
 
@@ -690,7 +691,19 @@ def insert_gwas_results_from_file(conn, speciesID, gwas_results_file, gwas_algor
     chromosome = "chr"+str(chromosome)
     chromosomeID = find_chromosome(conn, chromosome, speciesID)
     basepair = snp_list[1]
-    new_gwas_result = gwas_result(chromosomeID, basepair, gwas_run_ID, row['pval'], row['cofactor'], row['order'], row['nullPval'], row['modelAddedPval'], row['model'], row['PCs'])
+    
+    pcs = row['PCs']
+    if type(pcs) == str:
+      pcs_list = pcs.split(":")
+      pcs_list = [int(x) for x in pcs_list]
+    elif np.isnan(pcs):
+      pcs_list = None
+ 
+    new_gwas_result = gwas_result(chromosomeID, basepair, gwas_run_ID, row['pval'], row['cofactor'], row['order'], row['nullPval'], row['modelAddedPval'], row['model'], pcs_list)
+    if new_gwas_result:
+      print("yep")
+    else:
+      print("nope")
     new_gwas_result_ID = insert_gwas_result(conn, new_gwas_result)
     new_gwas_result_IDs.append(new_gwas_result_ID)
   return new_gwas_result_IDs
@@ -1120,5 +1133,5 @@ if __name__ == '__main__':
   # PARSE GWAS_RESULTS FROM FILE AND ADD TO DB #
   ##############################################
   insertedGwasResultIDs = insert_gwas_results_from_file(conn, maizeSpeciesID, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv', MLMMalgorithmID, 0.2, 0.2, majorAlleleImputationID, B73_agpv4_maize282_versionID, kinshipID, populationStructureID, 0.1)
-  #print("Inserted gwas result IDs: ")
-  #print(insertedGwasResultIDs)
+  print("Inserted gwas result IDs: ")
+  print(insertedGwasResultIDs)

@@ -234,11 +234,11 @@ CREATE TABLE gwas_result (
   basepair INTEGER NOT NULL CHECK (basepair > 0),
   gwas_result_gwas_run INTEGER NOT NULL REFERENCES gwas_run (gwas_run_id),
   pval NUMERIC NOT NULL CHECK (pval > 0),
-  cofactor NUMERIC CHECK (cofactor > 0),
+  cofactor NUMERIC CHECK (cofactor IN (0,1)),
   _order NUMERIC CHECK (_order > 0),
   null_pval NUMERIC CHECK (null_pval > 0),
   model_added_pval NUMERIC CHECK (model_added_pval > 0),
   model TEXT,
   pcs INTEGER[],
-  unique (gwas_result_chromosome, basepair, gwas_result_gwas_run) 
+  unique unique_multi_column_gwas_result (gwas_result_chromosome, basepair, gwas_result_gwas_run, model) 
   );
