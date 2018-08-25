@@ -560,6 +560,6 @@ if __name__ == '__main__':
   ##############################################
   # PARSE GWAS_RESULTS FROM FILE AND ADD TO DB #
   ##############################################
-  insertedGwasResultIDs = insert_gwas_results_from_file(conn, maizeSpeciesID, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv', MLMMalgorithmID, 0.2, 0.2, majorAlleleImputationID, B73_agpv4_maize282_versionID, kinshipID, populationStructureID, 0.1)
-  print("Inserted gwas result IDs: ")
-  print(insertedGwasResultIDs)
+  #insertedGwasResultIDs = insert_gwas_results_from_file(conn, maizeSpeciesID, '/home/mwohl/Downloads/GWASdata/9.mlmmResults.csv', MLMMalgorithmID, 0.2, 0.2, majorAlleleImputationID, B73_agpv4_maize282_versionID, kinshipID, populationStructureID, 0.1)
+  #print("Inserted gwas result IDs: ")
+  #print(insertedGwasResultIDs)
