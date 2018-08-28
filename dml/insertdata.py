@@ -284,9 +284,9 @@ if __name__ == '__main__':
   #########################################################
   # ADD A HARD-CODED SPECIES TO DB USING insert_species() #
   #########################################################
-  #mySpecies = species('soybean', 'Glycine max', None, None)
-  #insertedSpeciesID = insert_species(conn, mySpecies)
-  #print(insertedSpeciesID)
+  mySpecies = species('testSpecies', 'Test sp', None, None)
+  insertedSpeciesID = insert.insert_species(conn, mySpecies)
+  print(insertedSpeciesID)
 
   ###############################################################
   # ADD A HARD-CODED POPULATION TO DB USING insert_population() #

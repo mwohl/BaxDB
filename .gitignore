@@ -2,3 +2,4 @@
 *.so
 .DS_Store
 file_storage/
+.pyc
