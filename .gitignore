@@ -3,3 +3,4 @@
 .DS_Store
 file_storage/
 .pyc
+.log

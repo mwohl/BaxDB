@@ -295,36 +295,36 @@ if __name__ == '__main__':
   # LOOK UP ID OF A HARD-CODED GWAS_ALGORITHM #
   #############################################
   MLMMalgorithmID = find.find_gwas_algorithm(conn, "MLMM")
-  #print("MLMM algorithm ID:")
-  #print(MLMMalgorithmID)
+  print("MLMM algorithm ID:")
+  print(MLMMalgorithmID)
 
   ###############################################
   # LOOK UP ID OF A HARD-CODED GENOTYPE_VERSION #
   ###############################################
   B73_agpv4_maize282_versionID = find.find_genotype_version(conn, "B73 RefGen_v4_AGPv4_Maize282")
-  #print("B73 agpv4 maize282 genotype version: ")
-  #print(B73_agpv4_maize282_versionID)  
+  print("B73 agpv4 maize282 genotype version: ")
+  print(B73_agpv4_maize282_versionID)  
 
   ################################################
   # LOOK UP ID OF A HARD-CODED IMPUTATION_METHOD #
   ################################################
   majorAlleleImputationID = find.find_imputation_method(conn, "impute to major allele")
-  #print("major allele imputation ID: ")
-  #print(majorAlleleImputationID)  
+  print("major allele imputation ID: ")
+  print(majorAlleleImputationID)  
 
   ######################################
   # LOOK UP ID OF A HARD-CODED KINSHIP #
   ######################################
   kinshipID = find.find_kinship(conn, "/opt/BaxDB/file_storage/kinship_files/4.AstleBalding.synbreed.kinship.csv")
-  #print("kinshipID: ")
-  #print(kinshipID)  
+  print("kinshipID: ")
+  print(kinshipID)  
 
   ###################################################
   # LOOK UP ID OF A HARD-CODED POPULATION_STRUCTURE #
   ###################################################
   populationStructureID = find.find_population_structure(conn, "/opt/BaxDB/file_storage/population_structure_files/4.Eigenstrat.population.structure.10PCs.csv")
-  #print("population structure ID: ")
-  #print(populationStructureID)
+  print("population structure ID: ")
+  print(populationStructureID)
 
   ###########################################
   # PARSE GWAS_RUNS FROM FILE AND ADD TO DB #
