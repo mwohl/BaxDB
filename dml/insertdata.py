@@ -3,30 +3,9 @@ import numpy as np
 import psycopg2
 import csv
 import insert
+import find
 from dbconnect import config, connect
 from models import species, population, line, chromosome, variant, genotype, trait, phenotype, growout_type, growout, location, gwas_algorithm, genotype_version, imputation_method, kinship_algorithm, kinship, population_structure_algorithm, population_structure, gwas_run, gwas_result
-
-def find_species(conn, speciesShortname):
-  cur = conn.cursor()
-  cur.execute("SELECT species_id FROM species WHERE shortname = '%s';" %  speciesShortname)
-  row = cur.fetchone()
-  if row is not None:
-    speciesID = row[0]  
-    cur.close()
-    return speciesID
-  else:
-    return None
-
-def find_population(conn, populationName):
-  cur = conn.cursor()
-  cur.execute("SELECT population_id FROM population WHERE population_name = '%s';" % populationName)
-  row = cur.fetchone()
-  if row is not None:
-    populationID = row[0]
-    cur.close()
-    return populationID
-  else:
-    return None
 
 def generate_chromosome_list(numChromosomes):
   chrlist = []
@@ -34,18 +13,6 @@ def generate_chromosome_list(numChromosomes):
     chrname = 'chr'+str(count)
     chrlist.append(chrname)
   return chrlist
-
-def find_chromosome(conn, chromosome_name, chromosome_species):
-  cur = conn.cursor()
-  # not sure if next line is correct...
-  cur.execute("SELECT chromosome_id FROM chromosome WHERE chromosome_name = '%s' AND chromosome_species = '%s';" % (chromosome_name, chromosome_species))
-  row = cur.fetchone()
-  if row is not None:
-    chromosomeID = row[0]
-    cur.close()
-    return chromosomeID
-  else:
-    return None
 
 def parse_lines_from_file(lineFile):
   linelist = []
@@ -56,21 +23,10 @@ def parse_lines_from_file(lineFile):
       linelist.append(linename)
   return linelist
 
-def find_line(conn, line_name, line_population):
-  cur = conn.cursor()
-  cur.execute("SELECT line_id FROM line WHERE line_name = '%s' AND line_population = '%s';" % (line_name, line_population))
-  row = cur.fetchone()
-  if row is not None:
-    lineID = row[0]
-    cur.close()
-    return lineID
-  else:
-    return None
-
 def convert_linelist_to_lineIDlist(conn, linelist, populationID):
   lineIDlist = []
   for linename in linelist:
-    lineID = find_line(conn, linename, populationID)
+    lineID = find.find_line(conn, linename, populationID)
     lineIDlist.append(lineID)
   return lineIDlist
 
@@ -95,127 +51,6 @@ def parse_genotypes_from_file(genotypeFile):
       rawGenos.append(item)
   return rawGenos
 
-def find_trait(conn, traitName):
-  cur = conn.cursor()
-  cur.execute("SELECT trait_id FROM trait WHERE trait_name = '%s';" % traitName)
-  row = cur.fetchone()
-  if row is not None:
-    traitID = row[0]
-    cur.close()
-    return traitID
-  else:
-    return None
-
-def find_growout_type(conn, growout_type):
-  cur = conn.cursor()
-  cur.execute("SELECT growout_type_id FROM growout_type WHERE growout_type = '%s';" % growout_type)
-  row = cur.fetchone()
-  if row is not None:
-    growout_type_ID = row[0]
-    cur.close()
-    return growout_type_ID
-  else:
-    return None
-   
-def find_location(conn, code):
-  cur = conn.cursor()
-  cur.execute("SELECT location_id FROM location WHERE code = '%s';" % code)
-  row = cur.fetchone()
-  if row is not None:
-    location_ID = row[0]
-    cur.close()
-    return location_ID
-  else:
-    return None
-
-def find_kinship_algorithm(conn, algorithm):
-  cur = conn.cursor()
-  cur.execute("SELECT kinship_algorithm_id FROM kinship_algorithm WHERE kinship_algorithm = '%s';" % algorithm)
-  row = cur.fetchone()
-  if row is not None:
-    kinship_algorithm_ID = row[0]
-    cur.close()
-    return kinship_algorithm_ID
-  else:
-    return None
-
-def find_population_structure_algorithm(conn, algorithm):
-  cur = conn.cursor()
-  cur.execute("SELECT population_structure_algorithm_id FROM population_structure_algorithm WHERE population_structure_algorithm = '%s';" % algorithm)
-  row = cur.fetchone()
-  if row is not None:
-    population_structure_algorithm_ID = row[0]
-    cur.close()
-    return population_structure_algorithm_ID
-  else:
-    return None
-
-def find_gwas_algorithm(conn, gwas_algorithm):
-  cur = conn.cursor()
-  cur.execute("SELECT gwas_algorithm_id FROM gwas_algorithm WHERE gwas_algorithm = '%s';" % gwas_algorithm)
-  row = cur.fetchone()
-  if row is not None:
-    gwas_algorithm_ID = row[0]
-    cur.close()
-    return gwas_algorithm_ID
-  else:
-    return None
-
-def find_genotype_version(conn, genotype_version_name):
-  cur = conn.cursor()
-  cur.execute("SELECT genotype_version_id FROM genotype_version WHERE genotype_version_name = '%s';" % genotype_version_name)
-  row = cur.fetchone()
-  if row is not None:
-    genotype_version_ID = row[0]
-    cur.close()
-    return genotype_version_ID
-  else:
-    return None
-
-def find_imputation_method(conn, imputation_method):
-  cur = conn.cursor()
-  cur.execute("SELECT imputation_method_id FROM imputation_method WHERE imputation_method = '%s';" % imputation_method)
-  row = cur.fetchone()
-  if row is not None:
-    imputation_method_ID = row[0]
-    cur.close()
-    return imputation_method_ID
-  else:
-    return None
-
-def find_kinship(conn, kinship_file_path):
-  cur = conn.cursor()
-  cur.execute("SELECT kinship_id FROM kinship WHERE kinship_file_path = '%s';" % kinship_file_path)
-  row = cur.fetchone()
-  if row is not None:
-    kinship_ID = row[0]
-    cur.close()
-    return kinship_ID
-  else:
-    return None
-
-def find_population_structure(conn, population_structure_file_path):
-  cur = conn.cursor()
-  cur.execute("SELECT population_structure_id FROM population_structure WHERE population_structure_file_path = '%s';" % population_structure_file_path)
-  row = cur.fetchone()
-  if row is not None:
-    population_structure_ID = row[0]
-    cur.close()
-    return population_structure_ID
-  else:
-    return None
-
-def find_trait(conn, trait_name):
-  cur = conn.cursor()
-  cur.execute("SELECT trait_id FROM trait WHERE trait_name = '%s';" % trait_name)
-  row = cur.fetchone()
-  if row is not None:
-    trait_ID = row[0]
-    cur.close()
-    return trait_ID
-  else:
-    return None
-
 def parse_unique_runs_from_gwas_results_file(filepath):
   gwas_runs = []
   df = pd.read_csv(filepath)
@@ -225,25 +60,14 @@ def parse_unique_runs_from_gwas_results_file(filepath):
       gwas_runs.append(gwas_run)
   return gwas_runs
 
-def find_gwas_run(conn, gwas_algorithm, missing_snp_cutoff_value, missing_line_cutoff_value, gwas_run_imputation_method, gwas_run_trait, nsnps, nlines, gwas_run_genotype_version, gwas_run_kinship, gwas_run_population_structure, minor_allele_frequency_cutoff_value):
-  cur = conn.cursor()
-  cur.execute("SELECT gwas_run_id FROM gwas_run WHERE gwas_run_gwas_algorithm = '%s' AND missing_snp_cutoff_value = '%s' AND missing_line_cutoff_value = '%s' AND gwas_run_imputation_method = '%s' AND gwas_run_trait = '%s' AND nsnps = '%s' AND nlines = '%s' AND gwas_run_genotype_version = '%s' AND gwas_run_kinship = '%s' AND gwas_run_population_structure = '%s' AND minor_allele_frequency_cutoff_value = '%s';" % (gwas_algorithm, missing_snp_cutoff_value, missing_line_cutoff_value, gwas_run_imputation_method, gwas_run_trait, nsnps, nlines, gwas_run_genotype_version, gwas_run_kinship, gwas_run_population_structure, minor_allele_frequency_cutoff_value))
-  row = cur.fetchone()
-  if row is not None:
-    gwas_run_ID = row[0]
-    cur.close()
-    return gwas_run_ID
-  else:
-    return None
-
 if __name__ == '__main__':
   conn = connect()
   #########################################################
   # ADD A HARD-CODED SPECIES TO DB USING insert_species() #
   #########################################################
   mySpecies = species('testSpecies', 'Test sp', None, None)
-  insertedSpeciesID = insert.insert_species(conn, mySpecies)
-  print(insertedSpeciesID)
+  #insertedSpeciesID = insert.insert_species(conn, mySpecies)
+  #print(insertedSpeciesID)
 
   ###############################################################
   # ADD A HARD-CODED POPULATION TO DB USING insert_population() #
@@ -255,46 +79,46 @@ if __name__ == '__main__':
   ###########################################################
   # LOOK UP ID OF A HARD-CODED SPECIES USING find_species() #
   ###########################################################
-  maizeSpeciesID = find_species(conn, 'maize')
-  #print("SpeciesID of maize:")
-  #print(maizeSpeciesID)
+  maizeSpeciesID = find.find_species(conn, 'maize')
+  print("SpeciesID of maize:")
+  print(maizeSpeciesID)
 
   #################################################################
   # LOOK UP ID OF A HARD-CODED POPULATION USING find_population() #
   #################################################################
-  maize282popID = find_population(conn, 'Maize282')
+  maize282popID = find.find_population(conn, 'Maize282')
   #print("PopulationID of Maize282:")
   #print(maize282popID)
 
   #################################################################
   # LOOK UP ID OF A HARD-CODED CHROMOSOME USING find_chromosome() #
   #################################################################
-  #maizeChr10ID = find_chromosome(conn, 'chr10', maizeSpeciesID)
+  #maizeChr10ID = find.find_chromosome(conn, 'chr10', maizeSpeciesID)
   #print("ChromosomeID of Maize Chr10:")
   #print(maizeChr10ID) 
 
   #####################################################
   # LOOK UP ID OF A HARD-CODED LINE USING find_line() #
   #####################################################
-  B73lineID = find_line(conn, '282set_B73', maize282popID)
+  B73lineID = find.find_line(conn, '282set_B73', maize282popID)
   
   ###################################################################
   # LOOK UP ID OF A HARD-CODED GROWOUT_TYPE USING find_chromosome() #
   ###################################################################
-  fieldGrowoutTypeID = find_growout_type(conn, 'field')
+  fieldGrowoutTypeID = find.find_growout_type(conn, 'field')
   #print("fieldGrowoutTypeID:")
   #print(fieldGrowoutTypeID)
   
   ###############################################################
   # LOOK UP ID OF A HARD-CODED LOCATION USING find_chromosome() #
   ###############################################################
-  PUlocID = find_location(conn, 'PU')
-  NYlocID = find_location(conn, "NY")
-  FLlocID = find_location(conn, "FL")
-  PRlocID = find_location(conn, "PR")
-  NClocID = find_location(conn, "NC")
-  SAlocID = find_location(conn, "SA")
-  MOlocID = find_location(conn, "MO")
+  PUlocID = find.find_location(conn, 'PU')
+  NYlocID = find.find_location(conn, "NY")
+  FLlocID = find.find_location(conn, "FL")
+  PRlocID = find.find_location(conn, "PR")
+  NClocID = find.find_location(conn, "NC")
+  SAlocID = find.find_location(conn, "SA")
+  MOlocID = find.find_location(conn, "MO")
 
   ########################################################
   # GET LINES FROM SPECIFIED 012.indv FILE AND ADD TO DB #
@@ -430,7 +254,7 @@ if __name__ == '__main__':
   ###############################################################################
   # LOOK UP ID OF A HARD-CODED KINSHIP_ALGORITHM USING find_kinship_algorithm() #
   ###############################################################################
-  #VanRadenID = find_kinship_algorithm(conn, "van raden")
+  #VanRadenID = find.find_kinship_algorithm(conn, "van raden")
   #print("Van Raden kinship alg ID:")
   #print(VanRadenID)  
 
@@ -455,7 +279,7 @@ if __name__ == '__main__':
   #########################################################################################################
   # LOOK UP ID OF A HARD-CODED POPULATION_STRUCTURE_ALGORITHM USING find_population_structure_algorithm() #
   #########################################################################################################
-  #EigenstratID = find_population_structure_algorithm(conn, "Eigenstrat")
+  #EigenstratID = find.find_population_structure_algorithm(conn, "Eigenstrat")
   #print("Eigenstrat pop str alg ID:")
   #print(EigenstratID)
 
@@ -470,35 +294,35 @@ if __name__ == '__main__':
   #############################################
   # LOOK UP ID OF A HARD-CODED GWAS_ALGORITHM #
   #############################################
-  MLMMalgorithmID = find_gwas_algorithm(conn, "MLMM")
+  MLMMalgorithmID = find.find_gwas_algorithm(conn, "MLMM")
   #print("MLMM algorithm ID:")
   #print(MLMMalgorithmID)
 
   ###############################################
   # LOOK UP ID OF A HARD-CODED GENOTYPE_VERSION #
   ###############################################
-  B73_agpv4_maize282_versionID = find_genotype_version(conn, "B73 RefGen_v4_AGPv4_Maize282")
+  B73_agpv4_maize282_versionID = find.find_genotype_version(conn, "B73 RefGen_v4_AGPv4_Maize282")
   #print("B73 agpv4 maize282 genotype version: ")
   #print(B73_agpv4_maize282_versionID)  
 
   ################################################
   # LOOK UP ID OF A HARD-CODED IMPUTATION_METHOD #
   ################################################
-  majorAlleleImputationID = find_imputation_method(conn, "impute to major allele")
+  majorAlleleImputationID = find.find_imputation_method(conn, "impute to major allele")
   #print("major allele imputation ID: ")
   #print(majorAlleleImputationID)  
 
   ######################################
   # LOOK UP ID OF A HARD-CODED KINSHIP #
   ######################################
-  kinshipID = find_kinship(conn, "/opt/BaxDB/file_storage/kinship_files/4.AstleBalding.synbreed.kinship.csv")
+  kinshipID = find.find_kinship(conn, "/opt/BaxDB/file_storage/kinship_files/4.AstleBalding.synbreed.kinship.csv")
   #print("kinshipID: ")
   #print(kinshipID)  
 
   ###################################################
   # LOOK UP ID OF A HARD-CODED POPULATION_STRUCTURE #
   ###################################################
-  populationStructureID = find_population_structure(conn, "/opt/BaxDB/file_storage/population_structure_files/4.Eigenstrat.population.structure.10PCs.csv")
+  populationStructureID = find.find_population_structure(conn, "/opt/BaxDB/file_storage/population_structure_files/4.Eigenstrat.population.structure.10PCs.csv")
   #print("population structure ID: ")
   #print(populationStructureID)
 
@@ -512,7 +336,7 @@ if __name__ == '__main__':
   #######################################
   # LOOK UP ID OF A HARD-CODED GWAS_RUN #
   #######################################
-   #gwasRunID = find_gwas_run(conn, MLMMalgorithmID, 0.2, 0.2, majorAlleleImputationID, ---, ---, ---, B73_agpv4_maize282_versionID, kinshipID, populationStructureID, 0.1) 
+   #gwasRunID = find.find_gwas_run(conn, MLMMalgorithmID, 0.2, 0.2, majorAlleleImputationID, ---, ---, ---, B73_agpv4_maize282_versionID, kinshipID, populationStructureID, 0.1) 
 
   ##############################################
   # PARSE GWAS_RESULTS FROM FILE AND ADD TO DB #
