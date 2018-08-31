@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 import psycopg2
 
+# Use the parameters in database.ini to configure the database connection
 def config(filename='database.ini', section='postgresql'):
   # create a parser
   parser = ConfigParser()
@@ -18,6 +19,7 @@ def config(filename='database.ini', section='postgresql'):
 
   return db
 
+# Return a connection to the database
 def connect():
   conn = None
   try:

@@ -1,5 +1,8 @@
+# Insert objects (as defined in models.py) into the database
+
 import pandas as pd
 import numpy as np
+import parsinghelpers as ph
 from models import species, population, line, chromosome, variant, genotype, trait, phenotype, growout_type, growout, location, gwas_algorithm, genotype_version, imputation_method, kinship_algorithm, kinship, population_structure_algorithm, population_structure, gwas_run, gwas_result
 
 def insert_species(conn, species):
@@ -54,7 +57,7 @@ def insert_chromosome(conn, chromosome):
     return None
 
 def insert_all_chromosomes_for_species(conn, numChromosomes, speciesID):
-  chrlist = generate_chromosome_list(numChromosomes)
+  chrlist = ph.generate_chromosome_list(numChromosomes)
   insertedChromosomeIDs = []
   for chrname in chrlist:
     chrobj = chromosome(chrname, speciesID)
@@ -80,7 +83,7 @@ def insert_line(conn, line):
     return None
 
 def insert_lines_from_file(conn, lineFile, populationID):
-  linelist = parse_lines_from_file(lineFile)
+  linelist = ph.parse_lines_from_file(lineFile)
   insertedLineIDs = []
   for linename in linelist:
     lineobj = line(linename, populationID)
@@ -107,7 +110,7 @@ def insert_variant(conn, variant):
     return None
 
 def insert_variants_from_file(conn, variantPosFile, speciesID, chromosomeID):
-  variantlist = parse_variants_from_file(variantPosFile)
+  variantlist = ph.parse_variants_from_file(variantPosFile)
   print('num variants:')
   print(len(variantlist))
   insertedVariantIDs = []
@@ -131,9 +134,9 @@ def insert_genotype(conn, genotype):
   return newID
 
 def insert_genotypes_from_file(conn, genotypeFile, lineFile, chromosomeID, populationID):
-  genotypes = parse_genotypes_from_file(genotypeFile)
-  linelist = parse_lines_from_file(lineFile)
-  lineIDlist = convert_linelist_to_lineIDlist(conn, linelist, populationID)
+  genotypes = ph.parse_genotypes_from_file(genotypeFile)
+  linelist = ph.parse_lines_from_file(lineFile)
+  lineIDlist = ph.convert_linelist_to_lineIDlist(conn, linelist, populationID)
   zipped = zip(lineIDlist, genotypes)
   ziplist = list(zipped)
   insertedGenotypeIDs = []
@@ -394,7 +397,7 @@ def insert_gwas_run(conn, gwas_run):
     return None
 
 def insert_gwas_runs_from_gwas_results_file(conn, gwas_results_file, gwasRunAlgorithmID, gwasRunGenotypeVersionID, missing_snp_cutoff_value, missing_line_cutoff_value, minor_allele_frequency_cutoff_value, gwasRunImputationMethodID, gwasRunKinshipID, gwasRunPopulationStructureID):
-  gwas_run_list = parse_unique_runs_from_gwas_results_file(gwas_results_file)
+  gwas_run_list = ph.parse_unique_runs_from_gwas_results_file(gwas_results_file)
   insertedGwasRunIDs = []
   for gwas_run_item in gwas_run_list:
     traitID = find_trait(conn, gwas_run_item[0])

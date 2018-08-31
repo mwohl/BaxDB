@@ -1,3 +1,5 @@
+# Look up IDs of various elements in the database
+
 import pandas as pd
 import numpy as np
 import psycopg2

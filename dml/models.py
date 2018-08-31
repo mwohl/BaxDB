@@ -1,3 +1,5 @@
+# A class is defined per each table in the database
+
 class species:
   def __init__(self, shortname, binomial, subspecies, variety):
     self.n = shortname
