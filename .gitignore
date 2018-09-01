@@ -1,6 +1,6 @@
 *.o
 *.so
-.DS_Store
+*.DS_Store
 file_storage/
-.pyc
-.log
+*.pyc
+*.log
